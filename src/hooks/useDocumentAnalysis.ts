@@ -32,8 +32,16 @@ export const useDocumentAnalysis = () => {
     setCurrentFileType(file.type || 'Document');
 
     try {
+      // Convert file to data URL for Tesseract
+      const imageUrl = await new Promise<string>((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(reader.result as string);
+        reader.onerror = reject;
+        reader.readAsDataURL(file);
+      });
+
       // Tesseract OCR runs locally in browser
-      const { data: { text } } = await Tesseract.recognize(file, 'ita+eng', {
+      const { data: { text } } = await Tesseract.recognize(imageUrl, 'ita+eng', {
         logger: (m) => console.log('OCR Progress:', m),
       });
       
