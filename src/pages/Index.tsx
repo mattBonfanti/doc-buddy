@@ -11,6 +11,7 @@ import DocumentVault from '@/components/DocumentVault';
 import DynamicFAQ from '@/components/DynamicFAQ';
 import EmailComposer from '@/components/EmailComposer';
 import EmailHistory from '@/components/EmailHistory';
+import MyProfile from '@/components/MyProfile';
 import { useDocumentAnalysis } from '@/hooks/useDocumentAnalysis';
 import { useDocumentStorage, StoredDocument } from '@/hooks/useDocumentStorage';
 import { useEmailHistory } from '@/hooks/useEmailHistory';
@@ -18,7 +19,7 @@ import { suggestOfficeByTopic } from '@/data/italianOffices';
 import { toast } from 'sonner';
 
 const Index = () => {
-  const [mode, setMode] = useState<'normal' | 'emergency' | 'search'>('search');
+  const [mode, setMode] = useState<'normal' | 'emergency' | 'search' | 'profile'>('search');
   const [emailComposerOpen, setEmailComposerOpen] = useState(false);
   const [emailInitialData, setEmailInitialData] = useState<{
     subject?: string;
@@ -136,6 +137,16 @@ Best regards,
     setEmailComposerOpen(true);
   };
 
+  const handleNavigate = (view: 'vault' | 'search' | 'faq' | 'profile') => {
+    if (view === 'vault') {
+      setMode('normal');
+    } else if (view === 'search') {
+      setMode('search');
+    } else if (view === 'profile') {
+      setMode('profile');
+    }
+  };
+
   const emergencyDocs = documents.length > 0 
     ? documents.map(doc => ({ name: doc.name, type: doc.type }))
     : [
@@ -145,7 +156,20 @@ Best regards,
       ];
 
   if (mode === 'emergency') {
-    return <EmergencyMode documents={emergencyDocs} onExit={() => setMode('normal')} />;
+    return <EmergencyMode documents={emergencyDocs} onExit={() => setMode('search')} />;
+  }
+
+  if (mode === 'profile') {
+    return (
+      <main className="min-h-screen bg-background flex flex-col md:flex-row">
+        <Sidebar 
+          onEmergencyMode={() => setMode('emergency')} 
+          activeView="profile"
+          onNavigate={handleNavigate}
+        />
+        <MyProfile documents={documents} />
+      </main>
+    );
   }
 
   if (mode === 'search') {
@@ -154,7 +178,7 @@ Best regards,
         <Sidebar 
           onEmergencyMode={() => setMode('emergency')} 
           activeView="search"
-          onNavigate={(view) => setMode(view as 'normal' | 'search')}
+          onNavigate={handleNavigate}
         />
         <FindSolutions onVerifyInfo={handleVerifySearchInfo} />
         <EmailComposer
@@ -172,7 +196,7 @@ Best regards,
       <Sidebar 
         onEmergencyMode={() => setMode('emergency')} 
         activeView="vault"
-        onNavigate={(view) => setMode(view === 'search' ? 'search' : 'normal')}
+        onNavigate={handleNavigate}
       />
 
       <div className="flex-1 p-6 md:p-8 overflow-y-auto">
