@@ -1,6 +1,10 @@
 import { useState, useCallback } from 'react';
 import Tesseract from 'tesseract.js';
+import * as pdfjsLib from 'pdfjs-dist';
 import { supabase } from '@/integrations/supabase/client';
+
+// Set PDF.js worker
+pdfjsLib.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/4.0.379/pdf.worker.min.js`;
 
 export interface TimelineStep {
   stage: string;
@@ -8,6 +12,26 @@ export interface TimelineStep {
   status: 'done' | 'pending' | 'urgent';
   tip?: string;
 }
+
+const pdfToImage = async (file: File): Promise<Blob> => {
+  const arrayBuffer = await file.arrayBuffer();
+  const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+  const page = await pdf.getPage(1);
+  
+  const scale = 2;
+  const viewport = page.getViewport({ scale });
+  
+  const canvas = document.createElement('canvas');
+  const context = canvas.getContext('2d')!;
+  canvas.height = viewport.height;
+  canvas.width = viewport.width;
+  
+  await page.render({ canvasContext: context, viewport }).promise;
+  
+  return new Promise((resolve) => {
+    canvas.toBlob((blob) => resolve(blob!), 'image/png');
+  });
+};
 
 export const useDocumentAnalysis = () => {
   const [ocrText, setOcrText] = useState('');
@@ -32,8 +56,15 @@ export const useDocumentAnalysis = () => {
     setCurrentFileType(file.type || 'Document');
 
     try {
+      // Convert PDF to image if needed
+      let imageSource: File | Blob = file;
+      if (file.type === 'application/pdf') {
+        console.log('Converting PDF to image...');
+        imageSource = await pdfToImage(file);
+      }
+
       // Tesseract OCR runs locally in browser
-      const { data: { text } } = await Tesseract.recognize(file, 'ita+eng', {
+      const { data: { text } } = await Tesseract.recognize(imageSource, 'ita+eng', {
         logger: (m) => console.log('OCR Progress:', m),
       });
       
