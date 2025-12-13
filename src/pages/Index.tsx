@@ -6,7 +6,7 @@ import DocumentViewer from '@/components/DocumentViewer';
 import SmartTimeline from '@/components/SmartTimeline';
 import CommunityTips from '@/components/CommunityTips';
 import ELI5Popover from '@/components/ELI5Popover';
-import FindSolutions from '@/components/FindSolutions';
+import ImmigrationAssistant from '@/components/ImmigrationAssistant';
 import DocumentVault from '@/components/DocumentVault';
 import { useDocumentAnalysis } from '@/hooks/useDocumentAnalysis';
 import { useDocumentStorage } from '@/hooks/useDocumentStorage';
@@ -73,6 +73,16 @@ const Index = () => {
   }
 
   if (mode === 'search') {
+    // Prepare stored documents for the assistant
+    const storedDocs = documents.map(doc => ({
+      id: doc.id,
+      name: doc.name,
+      type: doc.type,
+      text: doc.ocrText,
+      timelineSteps: doc.timeline,
+      createdAt: doc.createdAt,
+    }));
+
     return (
       <main className="min-h-screen bg-background flex flex-col md:flex-row">
         <Sidebar 
@@ -80,7 +90,7 @@ const Index = () => {
           activeView="search"
           onNavigate={(view) => setMode(view as 'normal' | 'search')}
         />
-        <FindSolutions />
+        <ImmigrationAssistant storedDocuments={storedDocs} />
       </main>
     );
   }

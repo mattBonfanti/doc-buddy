@@ -5,3 +5,9 @@ verify_jwt = false
 
 [functions.search-solutions]
 verify_jwt = false
+
+[functions.immigration-assistant]
+verify_jwt = false
+
+[functions.send-immigration-email]
+verify_jwt = false
