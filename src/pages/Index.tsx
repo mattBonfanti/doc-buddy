@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Upload, Save, Mail } from 'lucide-react';
+import { Upload, Save, Mail, FileText } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import Sidebar from '@/components/Sidebar';
 import EmergencyMode from '@/components/EmergencyMode';
@@ -22,6 +22,7 @@ import { toast } from 'sonner';
 const Index = () => {
   const { t } = useTranslation();
   const [mode, setMode] = useState<'normal' | 'emergency' | 'search' | 'profile'>('search');
+  const [selectedDocumentId, setSelectedDocumentId] = useState<string | undefined>(undefined);
   const [emailComposerOpen, setEmailComposerOpen] = useState(false);
   const [emailInitialData, setEmailInitialData] = useState<{
     subject?: string;
@@ -55,6 +56,10 @@ const Index = () => {
   const { documents, saveDocument, deleteDocument, isAnalyzing } = useDocumentStorage();
   const { emails, addEmail, deleteEmail } = useEmailHistory();
 
+  const selectedDocument = selectedDocumentId 
+    ? documents.find(d => d.id === selectedDocumentId) 
+    : undefined;
+
   const handleSaveDocument = async () => {
     if (!ocrText) {
       toast.error('No document to save');
@@ -63,7 +68,7 @@ const Index = () => {
     
     toast.info('Analyzing and saving document...');
     
-    await saveDocument({
+    const savedDoc = await saveDocument({
       name: currentFileName || 'Untitled Document',
       type: currentFileType || 'Document',
       ocrText,
@@ -71,9 +76,11 @@ const Index = () => {
       tips: streetTips,
     });
     toast.success('Document saved and analyzed');
+    setSelectedDocumentId(savedDoc.id);
   };
 
   const handleSelectDocument = (doc: typeof documents[0]) => {
+    setSelectedDocumentId(doc.id);
     loadDocument({
       ocrText: doc.ocrText,
       timeline: doc.timeline,
@@ -209,6 +216,7 @@ Best regards,
     );
   }
 
+  // Vault View - Side by side layout
   return (
     <main className="min-h-screen bg-background flex flex-col md:flex-row">
       <Sidebar 
@@ -224,11 +232,8 @@ Best regards,
 
       <div className="flex-1 p-6 md:p-8 overflow-y-auto">
         {/* Header */}
-        <div className="flex flex-wrap justify-between items-center gap-4 mb-8">
-          <div>
-            <h2 className="text-3xl font-black">{t('vault.documentScanner')}</h2>
-            <p className="text-muted-foreground font-mono text-sm">{t('vault.aiDecoder')}</p>
-          </div>
+        <div className="flex flex-wrap justify-between items-center gap-4 mb-6">
+          <h2 className="text-3xl font-black">{t('vault.myVault')}</h2>
           
           <div className="flex gap-3">
             {ocrText && (
@@ -243,7 +248,7 @@ Best regards,
             )}
             <label className="inline-flex items-center gap-2 bg-foreground text-background px-6 py-3 font-bold cursor-pointer hover:bg-foreground/90 transition-colors border-4 border-foreground shadow-sm">
               <Upload size={20} />
-              {t('vault.uploadDocument')}
+              {t('common.upload')}
               <input
                 type="file"
                 className="hidden"
@@ -254,68 +259,80 @@ Best regards,
           </div>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* Document Viewer */}
-          <div className="lg:col-span-2 bg-card border-4 border-foreground p-6 relative shadow-md min-h-[500px]">
-            <DocumentViewer
-              isProcessing={isProcessing}
-              ocrText={ocrText}
-              onTextSelect={handleTextSelect}
-              onUpload={handleUpload}
-            />
-            
-            <ELI5Popover
-              selectedText={selectedText}
-              explanation={explanation}
-              isLoading={isExplaining}
-              onClose={clearExplanation}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          {/* Left Column - Document List */}
+          <div className="bg-card border-4 border-foreground p-4 shadow-md">
+            <DocumentVault
+              documents={documents}
+              selectedDocId={selectedDocumentId}
+              onSelect={handleSelectDocument}
+              onDelete={deleteDocument}
+              onContactOffice={handleContactOffice}
             />
           </div>
 
-          {/* Intelligence Panel */}
+          {/* Right Column - Selected Document Details */}
           <div className="space-y-6">
-            {/* Timeline */}
-            <div className="bg-card p-6 border-4 border-foreground shadow-sm">
-              <h3 className="font-bold text-lg mb-1">{t('vault.deadlinesSteps')}</h3>
-              <p className="text-xs font-mono text-muted-foreground mb-4">{t('vault.extractedTimeline')}</p>
-              
-              {timeline.length > 0 ? (
-                <SmartTimeline steps={timeline} />
-              ) : (
-                <p className="text-sm text-muted-foreground font-mono py-8 text-center border-2 border-dashed border-border">
-                  {t('vault.uploadToGenerate')}
+            {selectedDocument || ocrText ? (
+              <>
+                {/* Document Viewer */}
+                <div className="bg-card border-4 border-foreground p-6 relative shadow-md min-h-[300px]">
+                  <DocumentViewer
+                    isProcessing={isProcessing}
+                    ocrText={ocrText}
+                    onTextSelect={handleTextSelect}
+                    onUpload={handleUpload}
+                  />
+                  
+                  <ELI5Popover
+                    selectedText={selectedText}
+                    explanation={explanation}
+                    isLoading={isExplaining}
+                    onClose={clearExplanation}
+                  />
+                </div>
+
+                {/* Timeline */}
+                <div className="bg-card p-6 border-4 border-foreground shadow-sm">
+                  <h3 className="font-bold text-lg mb-1">{t('vault.deadlinesSteps')}</h3>
+                  <p className="text-xs font-mono text-muted-foreground mb-4">{t('vault.extractedTimeline')}</p>
+                  
+                  {timeline.length > 0 ? (
+                    <SmartTimeline steps={timeline} />
+                  ) : (
+                    <p className="text-sm text-muted-foreground font-mono py-4 text-center border-2 border-dashed border-border">
+                      {t('vault.uploadToGenerate')}
+                    </p>
+                  )}
+                </div>
+
+                {/* Community Tips */}
+                <CommunityTips tips={streetTips} isLoading={isTipsLoading} />
+
+                {/* Email History */}
+                {emails.length > 0 && (
+                  <div className="bg-card p-6 border-4 border-foreground shadow-sm">
+                    <h3 className="font-bold text-lg mb-1 flex items-center gap-2">
+                      <Mail size={18} />
+                      {t('emailHistory.title')}
+                    </h3>
+                    <p className="text-xs font-mono text-muted-foreground mb-4">{t('emailHistory.subtitle')}</p>
+                    <EmailHistory emails={emails} onDelete={deleteEmail} />
+                  </div>
+                )}
+              </>
+            ) : (
+              /* Placeholder when no document selected */
+              <div className="bg-card border-4 border-foreground p-12 shadow-md flex flex-col items-center justify-center min-h-[400px]">
+                <FileText className="w-16 h-16 text-muted-foreground mb-4" />
+                <h3 className="font-bold text-lg mb-2">{t('vault.selectDocument')}</h3>
+                <p className="text-sm text-muted-foreground font-mono text-center max-w-xs">
+                  {t('vault.selectDocumentDesc')}
                 </p>
-              )}
-            </div>
-
-            {/* Community Tips */}
-            <CommunityTips tips={streetTips} isLoading={isTipsLoading} />
-
-            {/* Document Vault */}
-            <div className="bg-card p-6 border-4 border-foreground shadow-sm">
-              <h3 className="font-bold text-lg mb-1">{t('vault.title')}</h3>
-              <p className="text-xs font-mono text-muted-foreground mb-4">{t('vault.subtitle')}</p>
-              <DocumentVault
-                documents={documents}
-                onSelect={handleSelectDocument}
-                onDelete={deleteDocument}
-                onContactOffice={handleContactOffice}
-              />
-            </div>
-
-            {/* Email History */}
-            {emails.length > 0 && (
-              <div className="bg-card p-6 border-4 border-foreground shadow-sm">
-                <h3 className="font-bold text-lg mb-1 flex items-center gap-2">
-                  <Mail size={18} />
-                  {t('emailHistory.title')}
-                </h3>
-                <p className="text-xs font-mono text-muted-foreground mb-4">{t('emailHistory.subtitle')}</p>
-                <EmailHistory emails={emails} onDelete={deleteEmail} />
               </div>
             )}
 
-            {/* Dynamic FAQ */}
+            {/* Dynamic FAQ - Always visible */}
             <DynamicFAQ documents={documents} />
           </div>
         </div>

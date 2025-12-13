@@ -106,6 +106,7 @@
   "vault": {
     "title": "Document Vault",
     "subtitle": "Your saved documents",
+    "myVault": "My Vault",
     "empty": "Your Vault is Empty",
     "emptyDesc": "Upload and save documents to build your personal archive",
     "savedDocuments": "Saved Documents",
@@ -117,7 +118,19 @@
     "uploadDocument": "Upload Document",
     "deadlinesSteps": "Deadlines & Steps",
     "extractedTimeline": "Extracted timeline",
-    "uploadToGenerate": "Upload a document to generate timeline"
+    "uploadToGenerate": "Upload a document to generate timeline",
+    "selectDocument": "Select a Document",
+    "selectDocumentDesc": "Choose a document from the list to view its details, timeline, and tips",
+    "categories": {
+      "identity": "Identity Documents",
+      "health": "Health & Medical",
+      "work": "Work & Employment",
+      "housing": "Housing & Utilities",
+      "forms": "Forms & Applications",
+      "legal": "Legal & Official",
+      "financial": "Financial & Tax",
+      "other": "Other Documents"
+    }
   },
   "documentViewer": {
     "scanning": "Scanning text locally...",
