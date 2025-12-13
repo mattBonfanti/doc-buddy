@@ -6,10 +6,11 @@ import DocumentViewer from '@/components/DocumentViewer';
 import SmartTimeline from '@/components/SmartTimeline';
 import CommunityTips from '@/components/CommunityTips';
 import ELI5Popover from '@/components/ELI5Popover';
+import FindSolutions from '@/components/FindSolutions';
 import { useDocumentAnalysis } from '@/hooks/useDocumentAnalysis';
 
 const Index = () => {
-  const [mode, setMode] = useState<'normal' | 'emergency'>('normal');
+  const [mode, setMode] = useState<'normal' | 'emergency' | 'search'>('normal');
   
   const {
     ocrText,
@@ -35,9 +36,26 @@ const Index = () => {
     return <EmergencyMode documents={emergencyDocs} onExit={() => setMode('normal')} />;
   }
 
+  if (mode === 'search') {
+    return (
+      <main className="min-h-screen bg-background flex flex-col md:flex-row">
+        <Sidebar 
+          onEmergencyMode={() => setMode('emergency')} 
+          activeView="search"
+          onNavigate={(view) => setMode(view as 'normal' | 'search')}
+        />
+        <FindSolutions />
+      </main>
+    );
+  }
+
   return (
     <main className="min-h-screen bg-background flex flex-col md:flex-row">
-      <Sidebar onEmergencyMode={() => setMode('emergency')} />
+      <Sidebar 
+        onEmergencyMode={() => setMode('emergency')} 
+        activeView="vault"
+        onNavigate={(view) => setMode(view === 'search' ? 'search' : 'normal')}
+      />
 
       <div className="flex-1 p-6 md:p-8 overflow-y-auto">
         {/* Header */}
