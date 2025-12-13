@@ -1,12 +1,16 @@
 import { FileText, Search, Shield, HelpCircle, User } from 'lucide-react';
+import { StoredDocument } from '@/hooks/useDocumentStorage';
+import ScadenzeGantt from './ScadenzeGantt';
 
 interface SidebarProps {
   onEmergencyMode: () => void;
   activeView?: 'vault' | 'search' | 'faq' | 'profile';
   onNavigate?: (view: 'vault' | 'search' | 'faq' | 'profile') => void;
+  documents?: StoredDocument[];
+  onSelectDocument?: (id: string) => void;
 }
 
-const Sidebar = ({ onEmergencyMode, activeView = 'search', onNavigate }: SidebarProps) => (
+const Sidebar = ({ onEmergencyMode, activeView = 'search', onNavigate, documents = [], onSelectDocument }: SidebarProps) => (
   <aside className="w-full md:w-72 bg-foreground text-background p-6 flex flex-col justify-between min-h-screen md:min-h-0">
     <div>
       <h1 className="text-3xl font-black tracking-tighter mb-2">FitIn.</h1>
@@ -54,6 +58,8 @@ const Sidebar = ({ onEmergencyMode, activeView = 'search', onNavigate }: Sidebar
     </div>
 
     <div className="space-y-4 mt-8 md:mt-0">
+      <ScadenzeGantt documents={documents} onSelectDocument={onSelectDocument} />
+      
       <div className="text-xs font-mono text-background/50 p-3 border-2 border-background/20">
         <p className="mb-1">Privacy First</p>
         <p>OCR runs locally in your browser. Your documents never leave your device.</p>

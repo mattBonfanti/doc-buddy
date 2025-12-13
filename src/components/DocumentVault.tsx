@@ -1,6 +1,11 @@
 import { FileText, Trash2, Eye, Calendar, Tag, AlertCircle, Mail } from 'lucide-react';
-import { StoredDocument } from '@/hooks/useDocumentStorage';
+import { StoredDocument, KeyDate } from '@/hooks/useDocumentStorage';
 import { format } from 'date-fns';
+
+const formatKeyDate = (kd: KeyDate | string): string => {
+  if (typeof kd === 'string') return kd;
+  return `${kd.label} (${kd.date})`;
+};
 
 interface DocumentVaultProps {
   documents: StoredDocument[];
@@ -51,7 +56,7 @@ const DocumentVault = ({ documents, onSelect, onDelete, onContactOffice }: Docum
               {doc.analysis?.keyDates && doc.analysis.keyDates.length > 0 && (
                 <div className="flex items-center gap-1 mt-2 text-xs text-destructive">
                   <AlertCircle size={12} />
-                  <span className="font-mono">{doc.analysis.keyDates[0]}</span>
+                  <span className="font-mono">{formatKeyDate(doc.analysis.keyDates[0])}</span>
                 </div>
               )}
               

@@ -18,20 +18,23 @@ serve(async (req) => {
       throw new Error('LOVABLE_API_KEY is not configured');
     }
 
-    const systemPrompt = `You are an expert at analyzing Italian bureaucratic and immigration documents. 
+const systemPrompt = `You are an expert at analyzing Italian bureaucratic and immigration documents. 
 Analyze the document text and provide:
 1. A category (e.g., "Residence Permit", "Tax Document", "Health Card", "Work Contract", "Visa", "Identity Document", "Bank Document", "Utility Bill", "Legal Notice", "Other")
 2. A plain English summary (2-3 sentences explaining what this document is and its purpose)
-3. Key dates or deadlines mentioned
+3. Key dates or deadlines mentioned - IMPORTANT: Return structured date objects with label, date in ISO format (YYYY-MM-DD), and type
 4. Important action items if any
 
 Respond in JSON format:
 {
   "category": "string",
   "summary": "string", 
-  "keyDates": ["string"],
+  "keyDates": [{"label": "description of the date", "date": "YYYY-MM-DD", "type": "deadline|appointment|expiry"}],
   "actionItems": ["string"]
-}`;
+}
+
+For keyDates, always try to parse dates into ISO format. If a date says "scade il 15 marzo 2025", return {"label": "Scadenza permesso", "date": "2025-03-15", "type": "expiry"}.
+Types: "deadline" for action deadlines, "appointment" for scheduled meetings, "expiry" for document expirations.`;
 
     const response = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
       method: 'POST',
