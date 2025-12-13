@@ -1,25 +1,26 @@
 import { useState, useRef } from 'react';
 import { Search, Loader2, ExternalLink, BookOpen, Users, Building2, Mail } from 'lucide-react';
-import { supabase } from '@/integrations/supabase/client';
-
-const SUGGESTED_SEARCHES = [
-  "How to renew permesso di soggiorno",
-  "Questura appointment booking tips",
-  "Codice fiscale for foreigners",
-  "Convert foreign driver's license",
-  "Register residence (residenza)",
-  "Healthcare tessera sanitaria",
-];
+import { useTranslation } from 'react-i18next';
 
 interface FindSolutionsProps {
   onVerifyInfo?: (data: { query: string; results: string }) => void;
 }
 
 const FindSolutions = ({ onVerifyInfo }: FindSolutionsProps) => {
+  const { t } = useTranslation();
   const [query, setQuery] = useState('');
   const [results, setResults] = useState('');
   const [isSearching, setIsSearching] = useState(false);
   const abortControllerRef = useRef<AbortController | null>(null);
+
+  const suggestedSearches = [
+    t('findSolutions.suggestions.renewPermesso'),
+    t('findSolutions.suggestions.questuraAppointment'),
+    t('findSolutions.suggestions.codiceFiscale'),
+    t('findSolutions.suggestions.driversLicense'),
+    t('findSolutions.suggestions.registerResidence'),
+    t('findSolutions.suggestions.healthcareTessera'),
+  ];
 
   const handleSearch = async (searchQuery: string) => {
     if (!searchQuery.trim()) return;
@@ -88,7 +89,7 @@ const FindSolutions = ({ onVerifyInfo }: FindSolutionsProps) => {
     } catch (error: any) {
       if (error.name !== 'AbortError') {
         console.error('Search error:', error);
-        setResults('Failed to search. Please try again.');
+        setResults(t('findSolutions.searchFailed'));
       }
     } finally {
       setIsSearching(false);
@@ -105,9 +106,9 @@ const FindSolutions = ({ onVerifyInfo }: FindSolutionsProps) => {
       <div className="max-w-4xl mx-auto">
         {/* Header */}
         <div className="mb-8">
-          <h2 className="text-2xl md:text-3xl font-black mb-2">Find Solutions</h2>
+          <h2 className="text-2xl md:text-3xl font-black mb-2">{t('findSolutions.title')}</h2>
           <p className="text-muted-foreground font-mono text-sm">
-            Search Italian immigration procedures, community tips & official resources
+            {t('findSolutions.subtitle')}
           </p>
         </div>
 
@@ -120,7 +121,7 @@ const FindSolutions = ({ onVerifyInfo }: FindSolutionsProps) => {
                 type="text"
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
-                placeholder="Search procedures, tips, solutions..."
+                placeholder={t('findSolutions.searchPlaceholder')}
                 className="w-full pl-12 pr-4 py-4 bg-background border-4 border-foreground font-medium text-lg focus:outline-none focus:ring-2 focus:ring-primary"
               />
             </div>
@@ -129,7 +130,7 @@ const FindSolutions = ({ onVerifyInfo }: FindSolutionsProps) => {
               disabled={isSearching || !query.trim()}
               className="px-6 py-4 bg-foreground text-background font-black border-4 border-foreground hover:bg-primary hover:border-primary transition-colors disabled:opacity-50"
             >
-              {isSearching ? <Loader2 className="animate-spin" size={24} /> : 'SEARCH'}
+              {isSearching ? <Loader2 className="animate-spin" size={24} /> : t('findSolutions.searchButton')}
             </button>
           </div>
         </form>
@@ -137,9 +138,9 @@ const FindSolutions = ({ onVerifyInfo }: FindSolutionsProps) => {
         {/* Suggested Searches */}
         {!results && !isSearching && (
           <div className="mb-8">
-            <p className="text-sm font-mono text-muted-foreground mb-3">Popular searches:</p>
+            <p className="text-sm font-mono text-muted-foreground mb-3">{t('findSolutions.popularSearches')}</p>
             <div className="flex flex-wrap gap-2">
-              {SUGGESTED_SEARCHES.map((suggestion) => (
+              {suggestedSearches.map((suggestion) => (
                 <button
                   key={suggestion}
                   onClick={() => handleSearch(suggestion)}
@@ -157,18 +158,18 @@ const FindSolutions = ({ onVerifyInfo }: FindSolutionsProps) => {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
             <div className="p-4 border-4 border-border">
               <Building2 className="mb-2 text-primary" size={24} />
-              <h3 className="font-bold mb-1">Official Sources</h3>
-              <p className="text-sm text-muted-foreground">Questura, Prefettura, Portale Immigrazione</p>
+              <h3 className="font-bold mb-1">{t('findSolutions.officialSources')}</h3>
+              <p className="text-sm text-muted-foreground">{t('findSolutions.officialSourcesDesc')}</p>
             </div>
             <div className="p-4 border-4 border-border">
               <Users className="mb-2 text-primary" size={24} />
-              <h3 className="font-bold mb-1">Community Knowledge</h3>
-              <p className="text-sm text-muted-foreground">Reddit, Expat Forums, Facebook Groups</p>
+              <h3 className="font-bold mb-1">{t('findSolutions.communityKnowledge')}</h3>
+              <p className="text-sm text-muted-foreground">{t('findSolutions.communityKnowledgeDesc')}</p>
             </div>
             <div className="p-4 border-4 border-border">
               <BookOpen className="mb-2 text-primary" size={24} />
-              <h3 className="font-bold mb-1">Practical Tips</h3>
-              <p className="text-sm text-muted-foreground">Real experiences & street knowledge</p>
+              <h3 className="font-bold mb-1">{t('findSolutions.practicalTips')}</h3>
+              <p className="text-sm text-muted-foreground">{t('findSolutions.practicalTipsDesc')}</p>
             </div>
           </div>
         )}
@@ -178,7 +179,7 @@ const FindSolutions = ({ onVerifyInfo }: FindSolutionsProps) => {
             <div className="flex items-center justify-between gap-2 mb-4 pb-4 border-b-2 border-border">
               <div className="flex items-center gap-2">
                 <Search size={18} className="text-primary" />
-                <span className="font-bold">Results for: "{query}"</span>
+                <span className="font-bold">{t('findSolutions.resultsFor')} "{query}"</span>
               </div>
               {results && !isSearching && onVerifyInfo && (
                 <button
@@ -186,7 +187,7 @@ const FindSolutions = ({ onVerifyInfo }: FindSolutionsProps) => {
                   className="flex items-center gap-2 px-3 py-2 text-sm border-2 border-primary text-primary hover:bg-primary hover:text-primary-foreground transition-colors"
                 >
                   <Mail size={16} />
-                  Verify Info
+                  {t('findSolutions.verifyInfo')}
                 </button>
               )}
             </div>
@@ -194,7 +195,7 @@ const FindSolutions = ({ onVerifyInfo }: FindSolutionsProps) => {
             {isSearching && !results && (
               <div className="flex items-center gap-3 text-muted-foreground">
                 <Loader2 className="animate-spin" size={20} />
-                <span>Searching knowledge base...</span>
+                <span>{t('findSolutions.searching')}</span>
               </div>
             )}
             
@@ -212,7 +213,7 @@ const FindSolutions = ({ onVerifyInfo }: FindSolutionsProps) => {
           <div className="mt-8 p-4 bg-muted/50 border-2 border-border">
             <h3 className="font-bold mb-3 flex items-center gap-2">
               <ExternalLink size={16} />
-              Official Resources
+              {t('findSolutions.officialResources')}
             </h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-sm">
               <a href="https://www.portaleimmigrazione.it" target="_blank" rel="noopener noreferrer" 

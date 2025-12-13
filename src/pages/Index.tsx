@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Upload, Save, Mail } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import Sidebar from '@/components/Sidebar';
 import EmergencyMode from '@/components/EmergencyMode';
 import DocumentViewer from '@/components/DocumentViewer';
@@ -19,6 +20,7 @@ import { suggestOfficeByTopic } from '@/data/italianOffices';
 import { toast } from 'sonner';
 
 const Index = () => {
+  const { t } = useTranslation();
   const [mode, setMode] = useState<'normal' | 'emergency' | 'search' | 'profile'>('search');
   const [emailComposerOpen, setEmailComposerOpen] = useState(false);
   const [emailInitialData, setEmailInitialData] = useState<{
@@ -224,8 +226,8 @@ Best regards,
         {/* Header */}
         <div className="flex flex-wrap justify-between items-center gap-4 mb-8">
           <div>
-            <h2 className="text-3xl font-black">Document Scanner</h2>
-            <p className="text-muted-foreground font-mono text-sm">AI-powered bureaucracy decoder</p>
+            <h2 className="text-3xl font-black">{t('vault.documentScanner')}</h2>
+            <p className="text-muted-foreground font-mono text-sm">{t('vault.aiDecoder')}</p>
           </div>
           
           <div className="flex gap-3">
@@ -236,12 +238,12 @@ Best regards,
                 className="inline-flex items-center gap-2 bg-primary text-primary-foreground px-4 py-3 font-bold cursor-pointer hover:bg-primary/90 transition-colors border-4 border-primary disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 <Save size={20} />
-                {isAnalyzing ? 'Analyzing...' : 'Save to Vault'}
+                {isAnalyzing ? t('vault.analyzing') : t('vault.saveToVault')}
               </button>
             )}
             <label className="inline-flex items-center gap-2 bg-foreground text-background px-6 py-3 font-bold cursor-pointer hover:bg-foreground/90 transition-colors border-4 border-foreground shadow-sm">
               <Upload size={20} />
-              Upload Document
+              {t('vault.uploadDocument')}
               <input
                 type="file"
                 className="hidden"
@@ -274,14 +276,14 @@ Best regards,
           <div className="space-y-6">
             {/* Timeline */}
             <div className="bg-card p-6 border-4 border-foreground shadow-sm">
-              <h3 className="font-bold text-lg mb-1">Deadlines & Steps</h3>
-              <p className="text-xs font-mono text-muted-foreground mb-4">Extracted timeline</p>
+              <h3 className="font-bold text-lg mb-1">{t('vault.deadlinesSteps')}</h3>
+              <p className="text-xs font-mono text-muted-foreground mb-4">{t('vault.extractedTimeline')}</p>
               
               {timeline.length > 0 ? (
                 <SmartTimeline steps={timeline} />
               ) : (
                 <p className="text-sm text-muted-foreground font-mono py-8 text-center border-2 border-dashed border-border">
-                  Upload a document to generate timeline
+                  {t('vault.uploadToGenerate')}
                 </p>
               )}
             </div>
@@ -291,8 +293,8 @@ Best regards,
 
             {/* Document Vault */}
             <div className="bg-card p-6 border-4 border-foreground shadow-sm">
-              <h3 className="font-bold text-lg mb-1">Document Vault</h3>
-              <p className="text-xs font-mono text-muted-foreground mb-4">Your saved documents</p>
+              <h3 className="font-bold text-lg mb-1">{t('vault.title')}</h3>
+              <p className="text-xs font-mono text-muted-foreground mb-4">{t('vault.subtitle')}</p>
               <DocumentVault
                 documents={documents}
                 onSelect={handleSelectDocument}
@@ -306,9 +308,9 @@ Best regards,
               <div className="bg-card p-6 border-4 border-foreground shadow-sm">
                 <h3 className="font-bold text-lg mb-1 flex items-center gap-2">
                   <Mail size={18} />
-                  Email History
+                  {t('emailHistory.title')}
                 </h3>
-                <p className="text-xs font-mono text-muted-foreground mb-4">Verification emails sent</p>
+                <p className="text-xs font-mono text-muted-foreground mb-4">{t('emailHistory.subtitle')}</p>
                 <EmailHistory emails={emails} onDelete={deleteEmail} />
               </div>
             )}

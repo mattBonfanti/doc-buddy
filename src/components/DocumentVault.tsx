@@ -1,4 +1,5 @@
 import { FileText, Trash2, Eye, Calendar, Tag, AlertCircle, Mail } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { StoredDocument, KeyDate } from '@/hooks/useDocumentStorage';
 import { format } from 'date-fns';
 
@@ -15,13 +16,15 @@ interface DocumentVaultProps {
 }
 
 const DocumentVault = ({ documents, onSelect, onDelete, onContactOffice }: DocumentVaultProps) => {
+  const { t } = useTranslation();
+
   if (documents.length === 0) {
     return (
       <div className="border-2 border-dashed border-border p-8 text-center">
         <FileText className="w-12 h-12 mx-auto mb-4 text-muted-foreground" />
-        <h3 className="font-bold text-lg mb-2">Your Vault is Empty</h3>
+        <h3 className="font-bold text-lg mb-2">{t('vault.empty')}</h3>
         <p className="text-sm text-muted-foreground font-mono">
-          Upload and save documents to build your personal archive
+          {t('vault.emptyDesc')}
         </p>
       </div>
     );
@@ -30,7 +33,7 @@ const DocumentVault = ({ documents, onSelect, onDelete, onContactOffice }: Docum
   return (
     <div className="space-y-3">
       <h3 className="font-bold text-sm uppercase tracking-wider text-muted-foreground mb-4">
-        Saved Documents ({documents.length})
+        {t('vault.savedDocuments')} ({documents.length})
       </h3>
       {documents.map((doc) => (
         <div
@@ -45,14 +48,12 @@ const DocumentVault = ({ documents, onSelect, onDelete, onContactOffice }: Docum
                 <span className="text-xs font-mono text-primary">{doc.type}</span>
               </div>
               
-              {/* AI Summary */}
               {doc.analysis?.summary && (
                 <p className="text-xs text-muted-foreground mt-2 line-clamp-2">
                   {doc.analysis.summary}
                 </p>
               )}
               
-              {/* Key Dates */}
               {doc.analysis?.keyDates && doc.analysis.keyDates.length > 0 && (
                 <div className="flex items-center gap-1 mt-2 text-xs text-destructive">
                   <AlertCircle size={12} />
@@ -69,7 +70,7 @@ const DocumentVault = ({ documents, onSelect, onDelete, onContactOffice }: Docum
               <button
                 onClick={() => onSelect(doc)}
                 className="p-2 bg-foreground text-background hover:bg-foreground/80 transition-colors"
-                title="View document"
+                title={t('common.show')}
               >
                 <Eye size={16} />
               </button>
@@ -77,7 +78,7 @@ const DocumentVault = ({ documents, onSelect, onDelete, onContactOffice }: Docum
                 <button
                   onClick={() => onContactOffice(doc)}
                   className="p-2 bg-primary text-primary-foreground hover:bg-primary/80 transition-colors"
-                  title="Contact office"
+                  title={t('emailComposer.title')}
                 >
                   <Mail size={16} />
                 </button>
@@ -85,7 +86,7 @@ const DocumentVault = ({ documents, onSelect, onDelete, onContactOffice }: Docum
               <button
                 onClick={() => onDelete(doc.id)}
                 className="p-2 bg-destructive text-destructive-foreground hover:bg-destructive/80 transition-colors"
-                title="Delete document"
+                title={t('common.delete')}
               >
                 <Trash2 size={16} />
               </button>
@@ -94,7 +95,7 @@ const DocumentVault = ({ documents, onSelect, onDelete, onContactOffice }: Docum
           {doc.timeline.length > 0 && (
             <div className="mt-3 pt-3 border-t border-border">
               <p className="text-xs font-mono text-muted-foreground">
-                {doc.timeline.length} steps extracted
+                {doc.timeline.length} {t('vault.stepsExtracted')}
               </p>
             </div>
           )}
