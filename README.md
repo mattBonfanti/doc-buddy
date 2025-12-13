@@ -1,4 +1,6 @@
-# Welcome to your Lovable project
+# [FitIn-Become-Italian-with-confidence.pdf](https://github.com/user-attachments/files/24143052/FitIn-Become-Italian-with-confidence.pdf)
+
+Welcome to FitIn: Become Italian with confidence
 
 ## Project info
 
@@ -62,7 +64,7 @@ This project is built with:
 
 ## How can I deploy this project?
 
-Simply open [Lovable](https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID) and click on Share -> Publish.
+Simply open [Lovable](https://lovable.dev/projects/629ec019-173c-44f8-bbf9-144af3b9b120) and click on Share -> Publish.
 
 ## Can I connect a custom domain to my Lovable project?
 
