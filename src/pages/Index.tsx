@@ -8,6 +8,7 @@ import CommunityTips from '@/components/CommunityTips';
 import ELI5Popover from '@/components/ELI5Popover';
 import FindSolutions from '@/components/FindSolutions';
 import DocumentVault from '@/components/DocumentVault';
+import DynamicFAQ from '@/components/DynamicFAQ';
 import { useDocumentAnalysis } from '@/hooks/useDocumentAnalysis';
 import { useDocumentStorage } from '@/hooks/useDocumentStorage';
 import { toast } from 'sonner';
@@ -174,6 +175,9 @@ const Index = () => {
                 onDelete={deleteDocument}
               />
             </div>
+
+            {/* Dynamic FAQ */}
+            <DynamicFAQ documents={documents} />
           </div>
         </div>
       </div>
