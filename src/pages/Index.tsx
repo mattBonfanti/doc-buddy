@@ -275,23 +275,6 @@ Best regards,
           <div className="space-y-6">
             {selectedDocument || ocrText ? (
               <>
-                {/* Document Viewer */}
-                <div className="bg-card border-4 border-foreground p-6 relative shadow-md min-h-[300px]">
-                  <DocumentViewer
-                    isProcessing={isProcessing}
-                    ocrText={ocrText}
-                    onTextSelect={handleTextSelect}
-                    onUpload={handleUpload}
-                  />
-                  
-                  <ELI5Popover
-                    selectedText={selectedText}
-                    explanation={explanation}
-                    isLoading={isExplaining}
-                    onClose={clearExplanation}
-                  />
-                </div>
-
                 {/* Timeline */}
                 <div className="bg-card p-6 border-4 border-foreground shadow-sm">
                   <h3 className="font-bold text-lg mb-1">{t('vault.deadlinesSteps')}</h3>
@@ -308,6 +291,23 @@ Best regards,
 
                 {/* Community Tips */}
                 <CommunityTips tips={streetTips} isLoading={isTipsLoading} />
+
+                {/* Document Viewer */}
+                <div className="bg-card border-4 border-foreground p-6 relative shadow-md min-h-[300px]">
+                  <DocumentViewer
+                    isProcessing={isProcessing}
+                    ocrText={ocrText}
+                    onTextSelect={handleTextSelect}
+                    onUpload={handleUpload}
+                  />
+                  
+                  <ELI5Popover
+                    selectedText={selectedText}
+                    explanation={explanation}
+                    isLoading={isExplaining}
+                    onClose={clearExplanation}
+                  />
+                </div>
 
                 {/* Email History */}
                 {emails.length > 0 && (
