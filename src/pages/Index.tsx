@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Upload } from 'lucide-react';
+import { Upload, Save } from 'lucide-react';
 import Sidebar from '@/components/Sidebar';
 import EmergencyMode from '@/components/EmergencyMode';
 import DocumentViewer from '@/components/DocumentViewer';
@@ -7,13 +7,18 @@ import SmartTimeline from '@/components/SmartTimeline';
 import CommunityTips from '@/components/CommunityTips';
 import ELI5Popover from '@/components/ELI5Popover';
 import FindSolutions from '@/components/FindSolutions';
+import DocumentVault from '@/components/DocumentVault';
 import { useDocumentAnalysis } from '@/hooks/useDocumentAnalysis';
+import { useDocumentStorage } from '@/hooks/useDocumentStorage';
+import { toast } from 'sonner';
 
 const Index = () => {
   const [mode, setMode] = useState<'normal' | 'emergency' | 'search'>('normal');
   
   const {
     ocrText,
+    currentFileName,
+    currentFileType,
     isProcessing,
     timeline,
     streetTips,
@@ -24,13 +29,44 @@ const Index = () => {
     handleUpload,
     handleTextSelect,
     clearExplanation,
+    loadDocument,
   } = useDocumentAnalysis();
 
-  const emergencyDocs = [
-    { name: 'Passport', type: 'Identity Document' },
-    { name: 'Permesso di Soggiorno', type: 'Residence Permit' },
-    { name: 'Codice Fiscale', type: 'Tax Code' },
-  ];
+  const { documents, saveDocument, deleteDocument } = useDocumentStorage();
+
+  const handleSaveDocument = () => {
+    if (!ocrText) {
+      toast.error('No document to save');
+      return;
+    }
+    
+    saveDocument({
+      name: currentFileName || 'Untitled Document',
+      type: currentFileType || 'Document',
+      ocrText,
+      timeline,
+      tips: streetTips,
+    });
+    toast.success('Document saved to vault');
+  };
+
+  const handleSelectDocument = (doc: typeof documents[0]) => {
+    loadDocument({
+      ocrText: doc.ocrText,
+      timeline: doc.timeline,
+      tips: doc.tips,
+      name: doc.name,
+      type: doc.type,
+    });
+  };
+
+  const emergencyDocs = documents.length > 0 
+    ? documents.map(doc => ({ name: doc.name, type: doc.type }))
+    : [
+        { name: 'Passport', type: 'Identity Document' },
+        { name: 'Permesso di Soggiorno', type: 'Residence Permit' },
+        { name: 'Codice Fiscale', type: 'Tax Code' },
+      ];
 
   if (mode === 'emergency') {
     return <EmergencyMode documents={emergencyDocs} onExit={() => setMode('normal')} />;
@@ -65,16 +101,27 @@ const Index = () => {
             <p className="text-muted-foreground font-mono text-sm">AI-powered bureaucracy decoder</p>
           </div>
           
-          <label className="inline-flex items-center gap-2 bg-foreground text-background px-6 py-3 font-bold cursor-pointer hover:bg-foreground/90 transition-colors border-4 border-foreground shadow-sm">
-            <Upload size={20} />
-            Upload Document
-            <input
-              type="file"
-              className="hidden"
-              onChange={handleUpload}
-              accept="image/*,.pdf"
-            />
-          </label>
+          <div className="flex gap-3">
+            {ocrText && (
+              <button
+                onClick={handleSaveDocument}
+                className="inline-flex items-center gap-2 bg-primary text-primary-foreground px-4 py-3 font-bold cursor-pointer hover:bg-primary/90 transition-colors border-4 border-primary"
+              >
+                <Save size={20} />
+                Save to Vault
+              </button>
+            )}
+            <label className="inline-flex items-center gap-2 bg-foreground text-background px-6 py-3 font-bold cursor-pointer hover:bg-foreground/90 transition-colors border-4 border-foreground shadow-sm">
+              <Upload size={20} />
+              Upload Document
+              <input
+                type="file"
+                className="hidden"
+                onChange={handleUpload}
+                accept="image/*,.pdf"
+              />
+            </label>
+          </div>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -113,6 +160,17 @@ const Index = () => {
 
             {/* Community Tips */}
             <CommunityTips tips={streetTips} isLoading={isTipsLoading} />
+
+            {/* Document Vault */}
+            <div className="bg-card p-6 border-4 border-foreground shadow-sm">
+              <h3 className="font-bold text-lg mb-1">Document Vault</h3>
+              <p className="text-xs font-mono text-muted-foreground mb-4">Your saved documents</p>
+              <DocumentVault
+                documents={documents}
+                onSelect={handleSelectDocument}
+                onDelete={deleteDocument}
+              />
+            </div>
           </div>
         </div>
       </div>

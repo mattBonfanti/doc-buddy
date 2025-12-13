@@ -2,7 +2,7 @@ import { useState, useCallback } from 'react';
 import Tesseract from 'tesseract.js';
 import { supabase } from '@/integrations/supabase/client';
 
-interface TimelineStep {
+export interface TimelineStep {
   stage: string;
   estimatedDate: string;
   status: 'done' | 'pending' | 'urgent';
@@ -11,6 +11,8 @@ interface TimelineStep {
 
 export const useDocumentAnalysis = () => {
   const [ocrText, setOcrText] = useState('');
+  const [currentFileName, setCurrentFileName] = useState('');
+  const [currentFileType, setCurrentFileType] = useState('');
   const [isProcessing, setIsProcessing] = useState(false);
   const [timeline, setTimeline] = useState<TimelineStep[]>([]);
   const [streetTips, setStreetTips] = useState('');
@@ -26,6 +28,8 @@ export const useDocumentAnalysis = () => {
     setIsProcessing(true);
     setTimeline([]);
     setStreetTips('');
+    setCurrentFileName(file.name);
+    setCurrentFileType(file.type || 'Document');
 
     try {
       // Tesseract OCR runs locally in browser
@@ -158,8 +162,36 @@ export const useDocumentAnalysis = () => {
     setExplanation('');
   }, []);
 
+  const loadDocument = useCallback((doc: {
+    ocrText: string;
+    timeline: TimelineStep[];
+    tips: string;
+    name: string;
+    type: string;
+  }) => {
+    setOcrText(doc.ocrText);
+    setTimeline(doc.timeline);
+    setStreetTips(doc.tips);
+    setCurrentFileName(doc.name);
+    setCurrentFileType(doc.type);
+    setExplanation('');
+    setSelectedText('');
+  }, []);
+
+  const clearDocument = useCallback(() => {
+    setOcrText('');
+    setTimeline([]);
+    setStreetTips('');
+    setCurrentFileName('');
+    setCurrentFileType('');
+    setExplanation('');
+    setSelectedText('');
+  }, []);
+
   return {
     ocrText,
+    currentFileName,
+    currentFileType,
     isProcessing,
     timeline,
     streetTips,
@@ -170,5 +202,7 @@ export const useDocumentAnalysis = () => {
     handleUpload,
     handleTextSelect,
     clearExplanation,
+    loadDocument,
+    clearDocument,
   };
 };
