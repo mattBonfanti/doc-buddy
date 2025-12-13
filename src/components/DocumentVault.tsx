@@ -1,4 +1,4 @@
-import { FileText, Trash2, Eye, Calendar, Tag, AlertCircle } from 'lucide-react';
+import { FileText, Trash2, Eye, Calendar, Tag, AlertCircle, Mail } from 'lucide-react';
 import { StoredDocument } from '@/hooks/useDocumentStorage';
 import { format } from 'date-fns';
 
@@ -6,9 +6,10 @@ interface DocumentVaultProps {
   documents: StoredDocument[];
   onSelect: (doc: StoredDocument) => void;
   onDelete: (id: string) => void;
+  onContactOffice?: (doc: StoredDocument) => void;
 }
 
-const DocumentVault = ({ documents, onSelect, onDelete }: DocumentVaultProps) => {
+const DocumentVault = ({ documents, onSelect, onDelete, onContactOffice }: DocumentVaultProps) => {
   if (documents.length === 0) {
     return (
       <div className="border-2 border-dashed border-border p-8 text-center">
@@ -67,6 +68,15 @@ const DocumentVault = ({ documents, onSelect, onDelete }: DocumentVaultProps) =>
               >
                 <Eye size={16} />
               </button>
+              {onContactOffice && (
+                <button
+                  onClick={() => onContactOffice(doc)}
+                  className="p-2 bg-primary text-primary-foreground hover:bg-primary/80 transition-colors"
+                  title="Contact office"
+                >
+                  <Mail size={16} />
+                </button>
+              )}
               <button
                 onClick={() => onDelete(doc.id)}
                 className="p-2 bg-destructive text-destructive-foreground hover:bg-destructive/80 transition-colors"
