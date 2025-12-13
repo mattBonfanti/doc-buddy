@@ -1,5 +1,5 @@
 import { useState, useRef } from 'react';
-import { Search, Loader2, ExternalLink, BookOpen, Users, Building2 } from 'lucide-react';
+import { Search, Loader2, ExternalLink, BookOpen, Users, Building2, Mail } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 
 const SUGGESTED_SEARCHES = [
@@ -11,7 +11,11 @@ const SUGGESTED_SEARCHES = [
   "Healthcare tessera sanitaria",
 ];
 
-const FindSolutions = () => {
+interface FindSolutionsProps {
+  onVerifyInfo?: (data: { query: string; results: string }) => void;
+}
+
+const FindSolutions = ({ onVerifyInfo }: FindSolutionsProps) => {
   const [query, setQuery] = useState('');
   const [results, setResults] = useState('');
   const [isSearching, setIsSearching] = useState(false);
@@ -169,12 +173,22 @@ const FindSolutions = () => {
           </div>
         )}
 
-        {/* Results */}
         {(results || isSearching) && (
           <div className="bg-card border-4 border-border p-6">
-            <div className="flex items-center gap-2 mb-4 pb-4 border-b-2 border-border">
-              <Search size={18} className="text-primary" />
-              <span className="font-bold">Results for: "{query}"</span>
+            <div className="flex items-center justify-between gap-2 mb-4 pb-4 border-b-2 border-border">
+              <div className="flex items-center gap-2">
+                <Search size={18} className="text-primary" />
+                <span className="font-bold">Results for: "{query}"</span>
+              </div>
+              {results && !isSearching && onVerifyInfo && (
+                <button
+                  onClick={() => onVerifyInfo({ query, results })}
+                  className="flex items-center gap-2 px-3 py-2 text-sm border-2 border-primary text-primary hover:bg-primary hover:text-primary-foreground transition-colors"
+                >
+                  <Mail size={16} />
+                  Verify Info
+                </button>
+              )}
             </div>
             
             {isSearching && !results && (

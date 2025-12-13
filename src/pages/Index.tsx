@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Upload, Save } from 'lucide-react';
+import { Upload, Save, Mail } from 'lucide-react';
 import Sidebar from '@/components/Sidebar';
 import EmergencyMode from '@/components/EmergencyMode';
 import DocumentViewer from '@/components/DocumentViewer';
@@ -9,12 +9,28 @@ import ELI5Popover from '@/components/ELI5Popover';
 import FindSolutions from '@/components/FindSolutions';
 import DocumentVault from '@/components/DocumentVault';
 import DynamicFAQ from '@/components/DynamicFAQ';
+import EmailComposer from '@/components/EmailComposer';
+import EmailHistory from '@/components/EmailHistory';
 import { useDocumentAnalysis } from '@/hooks/useDocumentAnalysis';
-import { useDocumentStorage } from '@/hooks/useDocumentStorage';
+import { useDocumentStorage, StoredDocument } from '@/hooks/useDocumentStorage';
+import { useEmailHistory } from '@/hooks/useEmailHistory';
+import { suggestOfficeByTopic } from '@/data/italianOffices';
 import { toast } from 'sonner';
 
 const Index = () => {
   const [mode, setMode] = useState<'normal' | 'emergency' | 'search'>('normal');
+  const [emailComposerOpen, setEmailComposerOpen] = useState(false);
+  const [emailInitialData, setEmailInitialData] = useState<{
+    subject?: string;
+    body?: string;
+    suggestedOffice?: ReturnType<typeof suggestOfficeByTopic>;
+    context: {
+      type: 'search' | 'document';
+      searchQuery?: string;
+      documentId?: string;
+      documentName?: string;
+    };
+  } | undefined>(undefined);
   
   const {
     ocrText,
@@ -34,6 +50,7 @@ const Index = () => {
   } = useDocumentAnalysis();
 
   const { documents, saveDocument, deleteDocument, isAnalyzing } = useDocumentStorage();
+  const { emails, addEmail, deleteEmail } = useEmailHistory();
 
   const handleSaveDocument = async () => {
     if (!ocrText) {
@@ -63,6 +80,62 @@ const Index = () => {
     });
   };
 
+  const handleVerifySearchInfo = (data: { query: string; results: string }) => {
+    const suggestedOffice = suggestOfficeByTopic(data.query);
+    setEmailInitialData({
+      subject: `Question about: ${data.query}`,
+      body: `Dear Sir/Madam,
+
+I am writing to verify some information I found regarding "${data.query}".
+
+The information states:
+${data.results.slice(0, 500)}${data.results.length > 500 ? '...' : ''}
+
+Could you please confirm if this information is current and accurate?
+
+Thank you for your assistance.
+
+Best regards,
+[Your Name]
+[Your Contact Information]`,
+      suggestedOffice,
+      context: {
+        type: 'search',
+        searchQuery: data.query,
+      },
+    });
+    setEmailComposerOpen(true);
+  };
+
+  const handleContactOffice = (doc: StoredDocument) => {
+    const suggestedOffice = suggestOfficeByTopic(doc.type + ' ' + (doc.analysis?.summary || ''));
+    setEmailInitialData({
+      subject: `Question about: ${doc.name}`,
+      body: `Dear Sir/Madam,
+
+I am writing regarding a document I have: ${doc.name} (${doc.type}).
+
+${doc.analysis?.summary ? `Document summary: ${doc.analysis.summary}` : ''}
+
+${doc.analysis?.keyDates?.length ? `Key dates on the document: ${doc.analysis.keyDates.join(', ')}` : ''}
+
+I would like to verify the current status and any required actions.
+
+Thank you for your assistance.
+
+Best regards,
+[Your Name]
+[Your Contact Information]`,
+      suggestedOffice,
+      context: {
+        type: 'document',
+        documentId: doc.id,
+        documentName: doc.name,
+      },
+    });
+    setEmailComposerOpen(true);
+  };
+
   const emergencyDocs = documents.length > 0 
     ? documents.map(doc => ({ name: doc.name, type: doc.type }))
     : [
@@ -83,7 +156,13 @@ const Index = () => {
           activeView="search"
           onNavigate={(view) => setMode(view as 'normal' | 'search')}
         />
-        <FindSolutions />
+        <FindSolutions onVerifyInfo={handleVerifySearchInfo} />
+        <EmailComposer
+          isOpen={emailComposerOpen}
+          onClose={() => setEmailComposerOpen(false)}
+          onEmailSent={addEmail}
+          initialData={emailInitialData}
+        />
       </main>
     );
   }
@@ -173,14 +252,34 @@ const Index = () => {
                 documents={documents}
                 onSelect={handleSelectDocument}
                 onDelete={deleteDocument}
+                onContactOffice={handleContactOffice}
               />
             </div>
+
+            {/* Email History */}
+            {emails.length > 0 && (
+              <div className="bg-card p-6 border-4 border-foreground shadow-sm">
+                <h3 className="font-bold text-lg mb-1 flex items-center gap-2">
+                  <Mail size={18} />
+                  Email History
+                </h3>
+                <p className="text-xs font-mono text-muted-foreground mb-4">Verification emails sent</p>
+                <EmailHistory emails={emails} onDelete={deleteEmail} />
+              </div>
+            )}
 
             {/* Dynamic FAQ */}
             <DynamicFAQ documents={documents} />
           </div>
         </div>
       </div>
+
+      <EmailComposer
+        isOpen={emailComposerOpen}
+        onClose={() => setEmailComposerOpen(false)}
+        onEmailSent={addEmail}
+        initialData={emailInitialData}
+      />
     </main>
   );
 };
