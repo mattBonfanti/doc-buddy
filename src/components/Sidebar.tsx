@@ -1,9 +1,9 @@
-import { FileText, Search, Shield, HelpCircle } from 'lucide-react';
+import { FileText, Search, Shield, HelpCircle, User } from 'lucide-react';
 
 interface SidebarProps {
   onEmergencyMode: () => void;
-  activeView?: 'vault' | 'search' | 'faq';
-  onNavigate?: (view: 'vault' | 'search' | 'faq') => void;
+  activeView?: 'vault' | 'search' | 'faq' | 'profile';
+  onNavigate?: (view: 'vault' | 'search' | 'faq' | 'profile') => void;
 }
 
 const Sidebar = ({ onEmergencyMode, activeView = 'search', onNavigate }: SidebarProps) => (
@@ -34,6 +34,17 @@ const Sidebar = ({ onEmergencyMode, activeView = 'search', onNavigate }: Sidebar
         >
           <FileText size={20} />
           My Vault
+        </button>
+        <button 
+          onClick={() => onNavigate?.('profile')}
+          className={`w-full flex items-center gap-3 p-3 font-bold border-4 transition-colors ${
+            activeView === 'profile' 
+              ? 'bg-background text-foreground border-background' 
+              : 'text-background/70 hover:text-background hover:bg-background/10 border-transparent'
+          }`}
+        >
+          <User size={20} />
+          My Profile
         </button>
         <button className="w-full flex items-center gap-3 p-3 font-medium text-background/70 hover:text-background hover:bg-background/10 transition-colors border-4 border-transparent">
           <HelpCircle size={20} />
