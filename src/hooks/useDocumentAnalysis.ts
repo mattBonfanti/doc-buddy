@@ -1,5 +1,4 @@
 import { useState, useCallback } from 'react';
-import Tesseract from 'tesseract.js';
 import { supabase } from '@/integrations/supabase/client';
 
 export interface TimelineStep {
@@ -32,18 +31,37 @@ export const useDocumentAnalysis = () => {
     setCurrentFileType(file.type || 'Document');
 
     try {
-      // Convert file to data URL for Tesseract
-      const imageUrl = await new Promise<string>((resolve, reject) => {
+      // Convert file to base64
+      const base64 = await new Promise<string>((resolve, reject) => {
         const reader = new FileReader();
-        reader.onload = () => resolve(reader.result as string);
+        reader.onload = () => {
+          const result = reader.result as string;
+          // Remove data URL prefix to get just base64
+          const base64Data = result.split(',')[1];
+          resolve(base64Data);
+        };
         reader.onerror = reject;
         reader.readAsDataURL(file);
       });
 
-      // Tesseract OCR runs locally in browser
-      const { data: { text } } = await Tesseract.recognize(imageUrl, 'ita+eng', {
-        logger: (m) => console.log('OCR Progress:', m),
+      // Use AI-powered OCR via edge function
+      const ocrResponse = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/ocr-document`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
+        },
+        body: JSON.stringify({ 
+          imageBase64: base64, 
+          mimeType: file.type || 'image/jpeg' 
+        }),
       });
+
+      if (!ocrResponse.ok) {
+        throw new Error('OCR failed');
+      }
+
+      const { text } = await ocrResponse.json();
       
       setOcrText(text);
       setIsProcessing(false);
