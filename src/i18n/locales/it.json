@@ -106,6 +106,7 @@
   "vault": {
     "title": "Archivio Documenti",
     "subtitle": "I tuoi documenti salvati",
+    "myVault": "I Miei Documenti",
     "empty": "Il Tuo Archivio è Vuoto",
     "emptyDesc": "Carica e salva documenti per costruire il tuo archivio personale",
     "savedDocuments": "Documenti Salvati",
@@ -117,7 +118,19 @@
     "uploadDocument": "Carica Documento",
     "deadlinesSteps": "Scadenze e Passaggi",
     "extractedTimeline": "Timeline estratta",
-    "uploadToGenerate": "Carica un documento per generare la timeline"
+    "uploadToGenerate": "Carica un documento per generare la timeline",
+    "selectDocument": "Seleziona un Documento",
+    "selectDocumentDesc": "Scegli un documento dalla lista per vedere i dettagli, la timeline e i consigli",
+    "categories": {
+      "identity": "Documenti d'Identità",
+      "health": "Salute e Sanità",
+      "work": "Lavoro e Impiego",
+      "housing": "Casa e Utenze",
+      "forms": "Moduli e Richieste",
+      "legal": "Legale e Ufficiale",
+      "financial": "Finanziario e Fiscale",
+      "other": "Altri Documenti"
+    }
   },
   "documentViewer": {
     "scanning": "Scansione testo in locale...",
