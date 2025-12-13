@@ -1,4 +1,5 @@
 import { Mail, Trash2, CheckCircle, XCircle, FileText, Search } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { SentEmail } from '@/hooks/useEmailHistory';
 import { format } from 'date-fns';
 
@@ -8,13 +9,15 @@ interface EmailHistoryProps {
 }
 
 const EmailHistory = ({ emails, onDelete }: EmailHistoryProps) => {
+  const { t } = useTranslation();
+
   if (emails.length === 0) {
     return (
       <div className="border-2 border-dashed border-border p-6 text-center">
         <Mail className="w-10 h-10 mx-auto mb-3 text-muted-foreground" />
-        <h4 className="font-bold mb-1">No Emails Sent</h4>
+        <h4 className="font-bold mb-1">{t('emailHistory.empty')}</h4>
         <p className="text-sm text-muted-foreground font-mono">
-          Emails you send to verify information will appear here
+          {t('emailHistory.emptyDesc')}
         </p>
       </div>
     );
@@ -52,7 +55,7 @@ const EmailHistory = ({ emails, onDelete }: EmailHistoryProps) => {
                 )}
                 <span className="truncate">
                   {email.context.type === 'search' 
-                    ? `Search: ${email.context.searchQuery}`
+                    ? `${t('common.search')}: ${email.context.searchQuery}`
                     : `Doc: ${email.context.documentName}`
                   }
                 </span>
@@ -66,7 +69,7 @@ const EmailHistory = ({ emails, onDelete }: EmailHistoryProps) => {
             <button
               onClick={() => onDelete(email.id)}
               className="p-2 text-muted-foreground hover:text-destructive transition-colors"
-              title="Delete"
+              title={t('common.delete')}
             >
               <Trash2 size={16} />
             </button>

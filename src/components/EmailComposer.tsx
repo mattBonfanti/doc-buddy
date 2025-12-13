@@ -1,7 +1,7 @@
 import { useState } from 'react';
-import { X, Send, Loader2, Building2, Mail, AlertCircle } from 'lucide-react';
+import { X, Send, Loader2, Mail, AlertCircle } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { ITALIAN_OFFICES, ItalianOffice, getCategoryLabel } from '@/data/italianOffices';
-import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 
 interface EmailComposerProps {
@@ -35,6 +35,7 @@ interface EmailComposerProps {
 }
 
 const EmailComposer = ({ isOpen, onClose, onEmailSent, initialData }: EmailComposerProps) => {
+  const { t } = useTranslation();
   const [selectedOffice, setSelectedOffice] = useState<ItalianOffice | null>(
     initialData?.suggestedOffice || null
   );
@@ -48,13 +49,13 @@ const EmailComposer = ({ isOpen, onClose, onEmailSent, initialData }: EmailCompo
 
   const handleSend = async () => {
     if (!recipientEmail || !replyToEmail || !subject || !body) {
-      toast.error('Please fill in all required fields');
+      toast.error(t('emailComposer.fillAllFields'));
       return;
     }
 
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(recipientEmail) || !emailRegex.test(replyToEmail)) {
-      toast.error('Please enter valid email addresses');
+      toast.error(t('emailComposer.invalidEmail'));
       return;
     }
 
@@ -96,11 +97,11 @@ const EmailComposer = ({ isOpen, onClose, onEmailSent, initialData }: EmailCompo
         status: 'sent',
       });
 
-      toast.success('Email sent successfully! Replies will go to your email.');
+      toast.success(t('emailComposer.sendSuccess'));
       onClose();
     } catch (error: any) {
       console.error('Error sending email:', error);
-      toast.error(error.message || 'Failed to send email');
+      toast.error(error.message || t('emailComposer.sendFailed'));
       
       onEmailSent({
         recipientEmail,
@@ -129,7 +130,7 @@ const EmailComposer = ({ isOpen, onClose, onEmailSent, initialData }: EmailCompo
         <div className="flex items-center justify-between p-4 border-b-4 border-border">
           <div className="flex items-center gap-2">
             <Mail size={20} />
-            <h2 className="font-black text-lg">Contact Office</h2>
+            <h2 className="font-black text-lg">{t('emailComposer.title')}</h2>
           </div>
           <button
             onClick={onClose}
@@ -143,19 +144,19 @@ const EmailComposer = ({ isOpen, onClose, onEmailSent, initialData }: EmailCompo
           {/* Context Banner */}
           {initialData?.context && (
             <div className="bg-muted p-3 border-2 border-border text-sm">
-              <span className="font-bold">Context: </span>
+              <span className="font-bold">{t('emailComposer.context')} </span>
               {initialData.context.type === 'search' && initialData.context.searchQuery && (
-                <span>Verifying search results for "{initialData.context.searchQuery}"</span>
+                <span>{t('emailComposer.verifyingSearch')} "{initialData.context.searchQuery}"</span>
               )}
               {initialData.context.type === 'document' && initialData.context.documentName && (
-                <span>Question about document: {initialData.context.documentName}</span>
+                <span>{t('emailComposer.questionAbout')} {initialData.context.documentName}</span>
               )}
             </div>
           )}
 
           {/* Office Selection */}
           <div>
-            <label className="block font-bold text-sm mb-2">Select Office</label>
+            <label className="block font-bold text-sm mb-2">{t('emailComposer.selectOffice')}</label>
             <select
               value={selectedOffice?.id || ''}
               onChange={(e) => {
@@ -164,7 +165,7 @@ const EmailComposer = ({ isOpen, onClose, onEmailSent, initialData }: EmailCompo
               }}
               className="w-full p-3 border-2 border-border bg-background font-mono text-sm focus:outline-none focus:border-foreground"
             >
-              <option value="">Choose an office...</option>
+              <option value="">{t('emailComposer.chooseOffice')}</option>
               {Object.entries(groupedOffices).map(([category, offices]) => (
                 <optgroup key={category} label={getCategoryLabel(category as ItalianOffice['category'])}>
                   {offices.map((office) => (
@@ -184,7 +185,7 @@ const EmailComposer = ({ isOpen, onClose, onEmailSent, initialData }: EmailCompo
 
           {/* Recipient Email */}
           <div>
-            <label className="block font-bold text-sm mb-2">Office Email Address *</label>
+            <label className="block font-bold text-sm mb-2">{t('emailComposer.officeEmail')} *</label>
             <input
               type="email"
               value={recipientEmail}
@@ -196,7 +197,7 @@ const EmailComposer = ({ isOpen, onClose, onEmailSent, initialData }: EmailCompo
 
           {/* Reply-To Email */}
           <div>
-            <label className="block font-bold text-sm mb-2">Your Email (for replies) *</label>
+            <label className="block font-bold text-sm mb-2">{t('emailComposer.yourEmail')} *</label>
             <input
               type="email"
               value={replyToEmail}
@@ -205,30 +206,30 @@ const EmailComposer = ({ isOpen, onClose, onEmailSent, initialData }: EmailCompo
               className="w-full p-3 border-2 border-border bg-background font-mono text-sm focus:outline-none focus:border-foreground"
             />
             <p className="text-xs text-muted-foreground mt-1">
-              Replies from the office will be sent to this address
+              {t('emailComposer.yourEmailHint')}
             </p>
           </div>
 
           {/* Subject */}
           <div>
-            <label className="block font-bold text-sm mb-2">Subject *</label>
+            <label className="block font-bold text-sm mb-2">{t('emailComposer.subject')} *</label>
             <input
               type="text"
               value={subject}
               onChange={(e) => setSubject(e.target.value)}
-              placeholder="Question about..."
+              placeholder={t('emailComposer.subjectPlaceholder')}
               className="w-full p-3 border-2 border-border bg-background font-mono text-sm focus:outline-none focus:border-foreground"
             />
           </div>
 
           {/* Body */}
           <div>
-            <label className="block font-bold text-sm mb-2">Message *</label>
+            <label className="block font-bold text-sm mb-2">{t('emailComposer.message')} *</label>
             <textarea
               value={body}
               onChange={(e) => setBody(e.target.value)}
               rows={8}
-              placeholder="Write your message here..."
+              placeholder={t('emailComposer.messagePlaceholder')}
               className="w-full p-3 border-2 border-border bg-background font-mono text-sm focus:outline-none focus:border-foreground resize-none"
             />
           </div>
@@ -237,8 +238,7 @@ const EmailComposer = ({ isOpen, onClose, onEmailSent, initialData }: EmailCompo
           <div className="flex items-start gap-2 p-3 bg-destructive/10 border-2 border-destructive/20 text-sm">
             <AlertCircle size={16} className="text-destructive mt-0.5 flex-shrink-0" />
             <p>
-              <strong>Note:</strong> Emails are sent from a shared address. Make sure to include 
-              your contact details in the message body for proper identification.
+              <strong>Note:</strong> {t('emailComposer.warning')}
             </p>
           </div>
 
@@ -251,12 +251,12 @@ const EmailComposer = ({ isOpen, onClose, onEmailSent, initialData }: EmailCompo
             {isSending ? (
               <>
                 <Loader2 size={20} className="animate-spin" />
-                Sending...
+                {t('emailComposer.sending')}
               </>
             ) : (
               <>
                 <Send size={20} />
-                Send Email
+                {t('emailComposer.send')}
               </>
             )}
           </button>
