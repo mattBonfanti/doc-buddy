@@ -1,6 +1,7 @@
 import { useMemo } from 'react';
-import { differenceInDays, format, addDays, parseISO, isValid } from 'date-fns';
-import { it } from 'date-fns/locale';
+import { differenceInDays, format, parseISO, isValid, Locale } from 'date-fns';
+import { it, enUS, ar } from 'date-fns/locale';
+import { useTranslation } from 'react-i18next';
 import { StoredDocument, KeyDate } from '@/hooks/useDocumentStorage';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { CalendarDays } from 'lucide-react';
@@ -19,9 +20,17 @@ interface ParsedDeadline {
   daysUntil: number;
 }
 
+const localeMap: Record<string, Locale> = {
+  it,
+  en: enUS,
+  ar,
+};
+
 const ScadenzeGantt = ({ documents, onSelectDocument }: ScadenzeGanttProps) => {
+  const { t, i18n } = useTranslation();
   const TIMELINE_DAYS = 60;
   const today = new Date();
+  const dateLocale = localeMap[i18n.language] || enUS;
 
   const deadlines = useMemo(() => {
     const parsed: ParsedDeadline[] = [];
@@ -83,9 +92,9 @@ const ScadenzeGantt = ({ documents, onSelectDocument }: ScadenzeGanttProps) => {
       <div className="p-3 border-2 border-background/20 text-xs font-mono text-background/50">
         <div className="flex items-center gap-2 mb-1">
           <CalendarDays size={14} />
-          <span>Scadenze</span>
+          <span>{t('sidebar.scadenze')}</span>
         </div>
-        <p className="text-background/40">No upcoming deadlines</p>
+        <p className="text-background/40">{t('sidebar.noDeadlines')}</p>
       </div>
     );
   }
@@ -95,7 +104,7 @@ const ScadenzeGantt = ({ documents, onSelectDocument }: ScadenzeGanttProps) => {
       <div className="p-3 border-2 border-background/20">
         <div className="flex items-center gap-2 mb-2 text-xs font-mono text-background/70">
           <CalendarDays size={14} />
-          <span>Scadenze ({deadlines.length})</span>
+          <span>{t('sidebar.scadenze')} ({deadlines.length})</span>
         </div>
 
         {/* Timeline bar */}
@@ -122,10 +131,10 @@ const ScadenzeGantt = ({ documents, onSelectDocument }: ScadenzeGanttProps) => {
               <TooltipContent side="top" className="max-w-[200px]">
                 <p className="font-bold text-xs">{dl.label}</p>
                 <p className="text-xs text-muted-foreground">
-                  {format(dl.date, 'd MMM yyyy', { locale: it })}
+                  {format(dl.date, 'd MMM yyyy', { locale: dateLocale })}
                 </p>
                 <p className="text-xs text-muted-foreground">
-                  {dl.daysUntil === 0 ? 'Today!' : `${dl.daysUntil} days`}
+                  {dl.daysUntil === 0 ? t('common.today') + '!' : `${dl.daysUntil} ${t('common.days')}`}
                 </p>
                 <p className="text-xs text-muted-foreground truncate">
                   📄 {dl.documentName}
@@ -137,7 +146,7 @@ const ScadenzeGantt = ({ documents, onSelectDocument }: ScadenzeGanttProps) => {
 
         {/* Timeline labels */}
         <div className="flex justify-between text-[10px] font-mono text-background/40">
-          <span>Today</span>
+          <span>{t('common.today')}</span>
           <span>30d</span>
           <span>60d</span>
         </div>

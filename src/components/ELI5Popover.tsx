@@ -1,4 +1,5 @@
 import { X } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 interface ELI5PopoverProps {
   selectedText: string;
@@ -8,6 +9,8 @@ interface ELI5PopoverProps {
 }
 
 const ELI5Popover = ({ selectedText, explanation, isLoading, onClose }: ELI5PopoverProps) => {
+  const { t } = useTranslation();
+
   if (!selectedText) return null;
 
   return (
@@ -20,7 +23,7 @@ const ELI5Popover = ({ selectedText, explanation, isLoading, onClose }: ELI5Popo
       </button>
       
       <h4 className="text-xs font-bold mb-2 uppercase tracking-wider font-mono text-background/70">
-        Explain Like I'm 5
+        {t('eli5.title')}
       </h4>
       
       <p className="text-sm font-medium mb-4 opacity-70 border-l-4 border-background/30 pl-3 italic">
@@ -29,7 +32,7 @@ const ELI5Popover = ({ selectedText, explanation, isLoading, onClose }: ELI5Popo
       
       <div className="text-base leading-relaxed">
         {isLoading ? (
-          <span className="animate-pulse font-mono">Translating legalese...</span>
+          <span className="animate-pulse font-mono">{t('eli5.translating')}</span>
         ) : (
           <span className="font-sans">{explanation}</span>
         )}
