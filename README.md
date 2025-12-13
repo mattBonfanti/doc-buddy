@@ -1,6 +1,14 @@
+# Welcome to FitIn
+## Become Italian with confidence
+For immigrants in Italy, every step toward a residence permit, visa, or simple document request quickly turns into a maze.
+
+Rules change from office to office, procedures are updated without notice, and public institutions rarely offer clear, centralised, and up-to-date information. The only reliable way to understand what you actually need is to contact each office directly—often in Italian, often repeatedly, and often after losing time, money, and opportunities because of missing or incorrect information.
+This project tackles that problem by creating an AI assistant that does the hard work on behalf of the user.
+
+The assistant contacts Italian public offices, collects and structures the latest requirements, and translates them into clear, tailored guidance in the user’s language. Instead of guessing, queueing, or paying intermediaries, immigrants get a single, trustworthy point of access to navigate Italian bureaucracy faster, with fewer errors, and with far less stress.
+
 # [FitIn-Become-Italian-with-confidence.pdf](https://github.com/user-attachments/files/24143052/FitIn-Become-Italian-with-confidence.pdf)
 
-Welcome to FitIn: Become Italian with confidence
 
 ## Project info
 
