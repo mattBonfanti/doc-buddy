@@ -1,9 +1,15 @@
 import { useState, useEffect, useCallback } from 'react';
 
+export interface KeyDate {
+  label: string;
+  date: string; // ISO format YYYY-MM-DD
+  type: 'deadline' | 'appointment' | 'expiry';
+}
+
 export interface DocumentAnalysis {
   category: string;
   summary: string;
-  keyDates: string[];
+  keyDates: (KeyDate | string)[]; // Support both new structured and legacy string formats
   actionItems: string[];
 }
 

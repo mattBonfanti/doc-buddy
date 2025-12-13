@@ -118,7 +118,7 @@ I am writing regarding a document I have: ${doc.name} (${doc.type}).
 
 ${doc.analysis?.summary ? `Document summary: ${doc.analysis.summary}` : ''}
 
-${doc.analysis?.keyDates?.length ? `Key dates on the document: ${doc.analysis.keyDates.join(', ')}` : ''}
+${doc.analysis?.keyDates?.length ? `Key dates on the document: ${doc.analysis.keyDates.map(kd => typeof kd === 'string' ? kd : `${kd.label}: ${kd.date}`).join(', ')}` : ''}
 
 I would like to verify the current status and any required actions.
 
@@ -166,6 +166,14 @@ Best regards,
           onEmergencyMode={() => setMode('emergency')} 
           activeView="profile"
           onNavigate={handleNavigate}
+          documents={documents}
+          onSelectDocument={(id) => {
+            const doc = documents.find(d => d.id === id);
+            if (doc) {
+              handleSelectDocument(doc);
+              setMode('normal');
+            }
+          }}
         />
         <MyProfile documents={documents} />
       </main>
@@ -179,6 +187,14 @@ Best regards,
           onEmergencyMode={() => setMode('emergency')} 
           activeView="search"
           onNavigate={handleNavigate}
+          documents={documents}
+          onSelectDocument={(id) => {
+            const doc = documents.find(d => d.id === id);
+            if (doc) {
+              handleSelectDocument(doc);
+              setMode('normal');
+            }
+          }}
         />
         <FindSolutions onVerifyInfo={handleVerifySearchInfo} />
         <EmailComposer
@@ -197,6 +213,11 @@ Best regards,
         onEmergencyMode={() => setMode('emergency')} 
         activeView="vault"
         onNavigate={handleNavigate}
+        documents={documents}
+        onSelectDocument={(id) => {
+          const doc = documents.find(d => d.id === id);
+          if (doc) handleSelectDocument(doc);
+        }}
       />
 
       <div className="flex-1 p-6 md:p-8 overflow-y-auto">
