@@ -32,22 +32,24 @@ const Index = () => {
     loadDocument,
   } = useDocumentAnalysis();
 
-  const { documents, saveDocument, deleteDocument } = useDocumentStorage();
+  const { documents, saveDocument, deleteDocument, isAnalyzing } = useDocumentStorage();
 
-  const handleSaveDocument = () => {
+  const handleSaveDocument = async () => {
     if (!ocrText) {
       toast.error('No document to save');
       return;
     }
     
-    saveDocument({
+    toast.info('Analyzing and saving document...');
+    
+    await saveDocument({
       name: currentFileName || 'Untitled Document',
       type: currentFileType || 'Document',
       ocrText,
       timeline,
       tips: streetTips,
     });
-    toast.success('Document saved to vault');
+    toast.success('Document saved and analyzed');
   };
 
   const handleSelectDocument = (doc: typeof documents[0]) => {
@@ -105,10 +107,11 @@ const Index = () => {
             {ocrText && (
               <button
                 onClick={handleSaveDocument}
-                className="inline-flex items-center gap-2 bg-primary text-primary-foreground px-4 py-3 font-bold cursor-pointer hover:bg-primary/90 transition-colors border-4 border-primary"
+                disabled={isAnalyzing}
+                className="inline-flex items-center gap-2 bg-primary text-primary-foreground px-4 py-3 font-bold cursor-pointer hover:bg-primary/90 transition-colors border-4 border-primary disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 <Save size={20} />
-                Save to Vault
+                {isAnalyzing ? 'Analyzing...' : 'Save to Vault'}
               </button>
             )}
             <label className="inline-flex items-center gap-2 bg-foreground text-background px-6 py-3 font-bold cursor-pointer hover:bg-foreground/90 transition-colors border-4 border-foreground shadow-sm">
