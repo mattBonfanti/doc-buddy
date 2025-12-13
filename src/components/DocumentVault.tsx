@@ -1,4 +1,4 @@
-import { FileText, Trash2, Eye, Calendar } from 'lucide-react';
+import { FileText, Trash2, Eye, Calendar, Tag, AlertCircle } from 'lucide-react';
 import { StoredDocument } from '@/hooks/useDocumentStorage';
 import { format } from 'date-fns';
 
@@ -34,9 +34,26 @@ const DocumentVault = ({ documents, onSelect, onDelete }: DocumentVaultProps) =>
           <div className="flex items-start justify-between gap-3">
             <div className="flex-1 min-w-0">
               <h4 className="font-bold truncate">{doc.name}</h4>
-              <p className="text-xs text-muted-foreground font-mono mt-1">
-                {doc.type}
-              </p>
+              <div className="flex items-center gap-2 mt-1">
+                <Tag size={12} className="text-primary" />
+                <span className="text-xs font-mono text-primary">{doc.type}</span>
+              </div>
+              
+              {/* AI Summary */}
+              {doc.analysis?.summary && (
+                <p className="text-xs text-muted-foreground mt-2 line-clamp-2">
+                  {doc.analysis.summary}
+                </p>
+              )}
+              
+              {/* Key Dates */}
+              {doc.analysis?.keyDates && doc.analysis.keyDates.length > 0 && (
+                <div className="flex items-center gap-1 mt-2 text-xs text-destructive">
+                  <AlertCircle size={12} />
+                  <span className="font-mono">{doc.analysis.keyDates[0]}</span>
+                </div>
+              )}
+              
               <div className="flex items-center gap-2 mt-2 text-xs text-muted-foreground">
                 <Calendar size={12} />
                 <span>{format(new Date(doc.createdAt), 'MMM d, yyyy')}</span>
