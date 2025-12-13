@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react';
 import { User, RefreshCw, Save, FileText, Edit3, Sparkles } from 'lucide-react';
-import { useTranslation } from 'react-i18next';
 import { useProfileStorage, UserProfile } from '@/hooks/useProfileStorage';
 import { StoredDocument } from '@/hooks/useDocumentStorage';
 import { Input } from '@/components/ui/input';
@@ -33,14 +32,13 @@ const ProfileField = ({ label, value, fieldKey, onChange, isManuallyEdited }: Fi
     <Input
       value={value}
       onChange={(e) => onChange(fieldKey, e.target.value)}
-      placeholder={label}
+      placeholder={`Enter ${label.toLowerCase()}`}
       className="border-2 border-border focus:border-foreground"
     />
   </div>
 );
 
 const MyProfile = ({ documents }: MyProfileProps) => {
-  const { t } = useTranslation();
   const { profile, saveProfile, extractFromDocuments, isExtracting } = useProfileStorage();
   const [localProfile, setLocalProfile] = useState<UserProfile>(profile);
   const [hasChanges, setHasChanges] = useState(false);
@@ -69,6 +67,7 @@ const MyProfile = ({ documents }: MyProfileProps) => {
   const handleSave = () => {
     const changedFields: string[] = [];
     
+    // Compare and track changed fields
     Object.keys(localProfile).forEach(key => {
       if (key === 'currentAddress') {
         Object.keys(localProfile.currentAddress).forEach(addrKey => {
@@ -87,16 +86,16 @@ const MyProfile = ({ documents }: MyProfileProps) => {
 
     saveProfile(localProfile, changedFields);
     setHasChanges(false);
-    toast.success(t('profile.profileSaved'));
+    toast.success('Profile saved');
   };
 
   const handleRefreshFromDocuments = async () => {
     if (documents.length === 0) {
-      toast.error(t('profile.noDocuments'));
+      toast.error('No documents in vault to extract from');
       return;
     }
 
-    toast.info(t('profile.extractingInfo'));
+    toast.info('Extracting information from your documents...');
     
     try {
       const documentTexts = documents
@@ -104,14 +103,14 @@ const MyProfile = ({ documents }: MyProfileProps) => {
         .map(doc => doc.ocrText);
 
       if (documentTexts.length === 0) {
-        toast.error(t('profile.noDocumentText'));
+        toast.error('No document text available for extraction');
         return;
       }
 
       await extractFromDocuments(documentTexts);
-      toast.success(t('profile.profileUpdated'));
+      toast.success('Profile updated from documents');
     } catch (error) {
-      toast.error(t('profile.extractFailed'));
+      toast.error('Failed to extract profile information');
     }
   };
 
@@ -124,10 +123,10 @@ const MyProfile = ({ documents }: MyProfileProps) => {
         <div>
           <h2 className="text-3xl font-black flex items-center gap-3">
             <User size={32} />
-            {t('profile.title')}
+            My Profile
           </h2>
           <p className="text-muted-foreground font-mono text-sm">
-            {t('profile.subtitle')}
+            Personal information extracted from your documents
           </p>
         </div>
 
@@ -139,7 +138,7 @@ const MyProfile = ({ documents }: MyProfileProps) => {
             className="border-4 border-foreground font-bold"
           >
             <RefreshCw size={18} className={isExtracting ? 'animate-spin' : ''} />
-            {isExtracting ? t('profile.extracting') : t('profile.refreshFromDocs')}
+            {isExtracting ? 'Extracting...' : 'Refresh from Docs'}
           </Button>
           
           {hasChanges && (
@@ -148,7 +147,7 @@ const MyProfile = ({ documents }: MyProfileProps) => {
               className="border-4 border-primary font-bold"
             >
               <Save size={18} />
-              {t('profile.saveChanges')}
+              Save Changes
             </Button>
           )}
         </div>
@@ -158,7 +157,7 @@ const MyProfile = ({ documents }: MyProfileProps) => {
       <div className="text-xs font-mono text-muted-foreground p-3 border-2 border-border mb-6 bg-muted/30">
         <p className="flex items-center gap-2">
           <FileText size={14} />
-          {t('profile.privacyNotice')}
+          Your profile is stored locally on your device and never uploaded to any server.
         </p>
       </div>
 
@@ -166,20 +165,20 @@ const MyProfile = ({ documents }: MyProfileProps) => {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Personal Information */}
         <div className="bg-card p-6 border-4 border-foreground shadow-md">
-          <h3 className="font-bold text-lg mb-1">{t('profile.sections.personal')}</h3>
-          <p className="text-xs font-mono text-muted-foreground mb-4">{t('profile.sections.personalDesc')}</p>
+          <h3 className="font-bold text-lg mb-1">Personal Information</h3>
+          <p className="text-xs font-mono text-muted-foreground mb-4">Basic identity details</p>
           
           <div className="space-y-4">
             <div className="grid grid-cols-2 gap-4">
               <ProfileField
-                label={t('profile.fields.firstName')}
+                label="First Name"
                 value={localProfile.firstName}
                 fieldKey="firstName"
                 onChange={handleFieldChange}
                 isManuallyEdited={isManuallyEdited('firstName')}
               />
               <ProfileField
-                label={t('profile.fields.lastName')}
+                label="Last Name"
                 value={localProfile.lastName}
                 fieldKey="lastName"
                 onChange={handleFieldChange}
@@ -187,21 +186,21 @@ const MyProfile = ({ documents }: MyProfileProps) => {
               />
             </div>
             <ProfileField
-              label={t('profile.fields.dateOfBirth')}
+              label="Date of Birth"
               value={localProfile.dateOfBirth}
               fieldKey="dateOfBirth"
               onChange={handleFieldChange}
               isManuallyEdited={isManuallyEdited('dateOfBirth')}
             />
             <ProfileField
-              label={t('profile.fields.nationality')}
+              label="Nationality"
               value={localProfile.nationality}
               fieldKey="nationality"
               onChange={handleFieldChange}
               isManuallyEdited={isManuallyEdited('nationality')}
             />
             <ProfileField
-              label={t('profile.fields.placeOfBirth')}
+              label="Place of Birth"
               value={localProfile.placeOfBirth}
               fieldKey="placeOfBirth"
               onChange={handleFieldChange}
@@ -212,26 +211,26 @@ const MyProfile = ({ documents }: MyProfileProps) => {
 
         {/* Contact Information */}
         <div className="bg-card p-6 border-4 border-foreground shadow-md">
-          <h3 className="font-bold text-lg mb-1">{t('profile.sections.contact')}</h3>
-          <p className="text-xs font-mono text-muted-foreground mb-4">{t('profile.sections.contactDesc')}</p>
+          <h3 className="font-bold text-lg mb-1">Contact Information</h3>
+          <p className="text-xs font-mono text-muted-foreground mb-4">How to reach you</p>
           
           <div className="space-y-4">
             <ProfileField
-              label={t('profile.fields.email')}
+              label="Email"
               value={localProfile.email}
               fieldKey="email"
               onChange={handleFieldChange}
               isManuallyEdited={isManuallyEdited('email')}
             />
             <ProfileField
-              label={t('profile.fields.phone')}
+              label="Phone"
               value={localProfile.phone}
               fieldKey="phone"
               onChange={handleFieldChange}
               isManuallyEdited={isManuallyEdited('phone')}
             />
             <ProfileField
-              label={t('profile.fields.streetAddress')}
+              label="Street Address"
               value={localProfile.currentAddress.street}
               fieldKey="currentAddress.street"
               onChange={handleFieldChange}
@@ -239,21 +238,21 @@ const MyProfile = ({ documents }: MyProfileProps) => {
             />
             <div className="grid grid-cols-3 gap-4">
               <ProfileField
-                label={t('profile.fields.city')}
+                label="City"
                 value={localProfile.currentAddress.city}
                 fieldKey="currentAddress.city"
                 onChange={handleFieldChange}
                 isManuallyEdited={isManuallyEdited('currentAddress.city')}
               />
               <ProfileField
-                label={t('profile.fields.province')}
+                label="Province"
                 value={localProfile.currentAddress.province}
                 fieldKey="currentAddress.province"
                 onChange={handleFieldChange}
                 isManuallyEdited={isManuallyEdited('currentAddress.province')}
               />
               <ProfileField
-                label={t('profile.fields.cap')}
+                label="CAP"
                 value={localProfile.currentAddress.postalCode}
                 fieldKey="currentAddress.postalCode"
                 onChange={handleFieldChange}
@@ -265,20 +264,20 @@ const MyProfile = ({ documents }: MyProfileProps) => {
 
         {/* Document Numbers */}
         <div className="bg-card p-6 border-4 border-foreground shadow-md">
-          <h3 className="font-bold text-lg mb-1">{t('profile.sections.documents')}</h3>
-          <p className="text-xs font-mono text-muted-foreground mb-4">{t('profile.sections.documentsDesc')}</p>
+          <h3 className="font-bold text-lg mb-1">Document Numbers</h3>
+          <p className="text-xs font-mono text-muted-foreground mb-4">Official identification</p>
           
           <div className="space-y-4">
             <div className="grid grid-cols-2 gap-4">
               <ProfileField
-                label={t('profile.fields.passportNumber')}
+                label="Passport Number"
                 value={localProfile.passportNumber}
                 fieldKey="passportNumber"
                 onChange={handleFieldChange}
                 isManuallyEdited={isManuallyEdited('passportNumber')}
               />
               <ProfileField
-                label={t('profile.fields.passportExpiry')}
+                label="Passport Expiry"
                 value={localProfile.passportExpiry}
                 fieldKey="passportExpiry"
                 onChange={handleFieldChange}
@@ -286,7 +285,7 @@ const MyProfile = ({ documents }: MyProfileProps) => {
               />
             </div>
             <ProfileField
-              label={t('profile.fields.codiceFiscale')}
+              label="Codice Fiscale"
               value={localProfile.codiceFiscale}
               fieldKey="codiceFiscale"
               onChange={handleFieldChange}
@@ -294,14 +293,14 @@ const MyProfile = ({ documents }: MyProfileProps) => {
             />
             <div className="grid grid-cols-2 gap-4">
               <ProfileField
-                label={t('profile.fields.permessoNumber')}
+                label="Permesso Number"
                 value={localProfile.permessoNumber}
                 fieldKey="permessoNumber"
                 onChange={handleFieldChange}
                 isManuallyEdited={isManuallyEdited('permessoNumber')}
               />
               <ProfileField
-                label={t('profile.fields.permessoExpiry')}
+                label="Permesso Expiry"
                 value={localProfile.permessoExpiry}
                 fieldKey="permessoExpiry"
                 onChange={handleFieldChange}
@@ -313,33 +312,33 @@ const MyProfile = ({ documents }: MyProfileProps) => {
 
         {/* Work & Study */}
         <div className="bg-card p-6 border-4 border-foreground shadow-md">
-          <h3 className="font-bold text-lg mb-1">{t('profile.sections.work')}</h3>
-          <p className="text-xs font-mono text-muted-foreground mb-4">{t('profile.sections.workDesc')}</p>
+          <h3 className="font-bold text-lg mb-1">Work & Study</h3>
+          <p className="text-xs font-mono text-muted-foreground mb-4">Employment and education</p>
           
           <div className="space-y-4">
             <ProfileField
-              label={t('profile.fields.employer')}
+              label="Employer"
               value={localProfile.employer}
               fieldKey="employer"
               onChange={handleFieldChange}
               isManuallyEdited={isManuallyEdited('employer')}
             />
             <ProfileField
-              label={t('profile.fields.occupation')}
+              label="Occupation"
               value={localProfile.occupation}
               fieldKey="occupation"
               onChange={handleFieldChange}
               isManuallyEdited={isManuallyEdited('occupation')}
             />
             <ProfileField
-              label={t('profile.fields.university')}
+              label="University"
               value={localProfile.university}
               fieldKey="university"
               onChange={handleFieldChange}
               isManuallyEdited={isManuallyEdited('university')}
             />
             <ProfileField
-              label={t('profile.fields.studyProgram')}
+              label="Study Program"
               value={localProfile.studyProgram}
               fieldKey="studyProgram"
               onChange={handleFieldChange}
@@ -352,7 +351,7 @@ const MyProfile = ({ documents }: MyProfileProps) => {
       {/* Last Updated */}
       {profile.lastUpdated && (
         <p className="text-xs font-mono text-muted-foreground mt-6 text-center">
-          {t('profile.lastUpdated')} {new Date(profile.lastUpdated).toLocaleString()}
+          Last updated: {new Date(profile.lastUpdated).toLocaleString()}
         </p>
       )}
     </div>
