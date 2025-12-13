@@ -6,24 +6,13 @@ interface SidebarProps {
   onNavigate?: (view: 'vault' | 'search' | 'faq') => void;
 }
 
-const Sidebar = ({ onEmergencyMode, activeView = 'vault', onNavigate }: SidebarProps) => (
+const Sidebar = ({ onEmergencyMode, activeView = 'search', onNavigate }: SidebarProps) => (
   <aside className="w-full md:w-72 bg-foreground text-background p-6 flex flex-col justify-between min-h-screen md:min-h-0">
     <div>
       <h1 className="text-3xl font-black tracking-tighter mb-2">FitIn.</h1>
       <p className="text-sm font-mono text-background/60 mb-8">Navigate Italian Bureaucracy</p>
       
       <nav className="space-y-2">
-        <button 
-          onClick={() => onNavigate?.('vault')}
-          className={`w-full flex items-center gap-3 p-3 font-bold border-4 transition-colors ${
-            activeView === 'vault' 
-              ? 'bg-background text-foreground border-background' 
-              : 'text-background/70 hover:text-background hover:bg-background/10 border-transparent'
-          }`}
-        >
-          <FileText size={20} />
-          My Vault
-        </button>
         <button 
           onClick={() => onNavigate?.('search')}
           className={`w-full flex items-center gap-3 p-3 font-bold border-4 transition-colors ${
@@ -34,6 +23,17 @@ const Sidebar = ({ onEmergencyMode, activeView = 'vault', onNavigate }: SidebarP
         >
           <Search size={20} />
           Find Solutions
+        </button>
+        <button 
+          onClick={() => onNavigate?.('vault')}
+          className={`w-full flex items-center gap-3 p-3 font-bold border-4 transition-colors ${
+            activeView === 'vault' 
+              ? 'bg-background text-foreground border-background' 
+              : 'text-background/70 hover:text-background hover:bg-background/10 border-transparent'
+          }`}
+        >
+          <FileText size={20} />
+          My Vault
         </button>
         <button className="w-full flex items-center gap-3 p-3 font-medium text-background/70 hover:text-background hover:bg-background/10 transition-colors border-4 border-transparent">
           <HelpCircle size={20} />

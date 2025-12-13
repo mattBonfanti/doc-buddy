@@ -18,7 +18,7 @@ import { suggestOfficeByTopic } from '@/data/italianOffices';
 import { toast } from 'sonner';
 
 const Index = () => {
-  const [mode, setMode] = useState<'normal' | 'emergency' | 'search'>('normal');
+  const [mode, setMode] = useState<'normal' | 'emergency' | 'search'>('search');
   const [emailComposerOpen, setEmailComposerOpen] = useState(false);
   const [emailInitialData, setEmailInitialData] = useState<{
     subject?: string;
