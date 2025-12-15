@@ -84,7 +84,7 @@ const DocumentVault = ({ documents, selectedDocId, onSelect, onDelete, onContact
         <FileText className="w-12 h-12 mx-auto mb-4 text-muted-foreground" />
         <h3 className="font-bold text-lg mb-2">{t('vault.empty')}</h3>
         <p className="text-sm text-muted-foreground font-mono">
-          {t('vault.emptyDesc')}
+          {t('vault.emptyDescFree')}
         </p>
       </div>
     );

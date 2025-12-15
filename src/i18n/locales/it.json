@@ -45,7 +45,10 @@
     "paymentCanceled": "Pagamento annullato",
     "checkoutError": "Impossibile avviare il checkout. Riprova.",
     "portalError": "Impossibile aprire il portale di fatturazione. Riprova.",
-    "premiumRequired": "Questa funzione richiede un abbonamento Premium"
+    "premiumRequired": "Questa funzione richiede un abbonamento Premium",
+    "uploadLimitReached": "Hai raggiunto il limite di upload gratuito. Passa a Premium per documenti illimitati.",
+    "documentsUsed": "{{count}}/{{max}} documento gratuito",
+    "unlockMore": "Sblocca illimitato →"
   },
   "sidebar": {
     "title": "FitIn.",
@@ -144,6 +147,7 @@
     "myVault": "I Miei Documenti",
     "empty": "Il Tuo Archivio è Vuoto",
     "emptyDesc": "Carica e salva documenti per costruire il tuo archivio personale",
+    "emptyDescFree": "Carica il tuo primo documento gratis! Passa a Premium per spazio illimitato.",
     "savedDocuments": "Documenti Salvati",
     "stepsExtracted": "passaggi estratti",
     "documentScanner": "Scanner Documenti",

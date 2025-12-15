@@ -45,7 +45,10 @@
     "paymentCanceled": "Payment was canceled",
     "checkoutError": "Failed to start checkout. Please try again.",
     "portalError": "Failed to open billing portal. Please try again.",
-    "premiumRequired": "This feature requires a Premium subscription"
+    "premiumRequired": "This feature requires a Premium subscription",
+    "uploadLimitReached": "You've reached your free upload limit. Upgrade to Premium for unlimited documents.",
+    "documentsUsed": "{{count}}/{{max}} free document",
+    "unlockMore": "Unlock unlimited →"
   },
   "sidebar": {
     "title": "FitIn.",
@@ -144,6 +147,7 @@
     "myVault": "My Vault",
     "empty": "Your Vault is Empty",
     "emptyDesc": "Upload and save documents to build your personal archive",
+    "emptyDescFree": "Upload your first document for free! Upgrade to Premium for unlimited storage.",
     "savedDocuments": "Saved Documents",
     "stepsExtracted": "steps extracted",
     "documentScanner": "Document Scanner",

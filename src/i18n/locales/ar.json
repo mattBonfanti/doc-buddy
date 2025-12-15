@@ -45,7 +45,10 @@
     "paymentCanceled": "تم إلغاء الدفع",
     "checkoutError": "فشل بدء عملية الدفع. حاول مرة أخرى.",
     "portalError": "فشل فتح بوابة الفواتير. حاول مرة أخرى.",
-    "premiumRequired": "هذه الميزة تتطلب اشتراكاً مميزاً"
+    "premiumRequired": "هذه الميزة تتطلب اشتراكاً مميزاً",
+    "uploadLimitReached": "لقد وصلت إلى حد الرفع المجاني. قم بالترقية إلى Premium للحصول على مستندات غير محدودة.",
+    "documentsUsed": "{{count}}/{{max}} مستند مجاني",
+    "unlockMore": "افتح غير محدود ←"
   },
   "sidebar": {
     "title": "FitIn.",
@@ -144,6 +147,7 @@
     "myVault": "مستنداتي",
     "empty": "أرشيفك فارغ",
     "emptyDesc": "ارفع واحفظ المستندات لبناء أرشيفك الشخصي",
+    "emptyDescFree": "ارفع أول مستند مجاناً! قم بالترقية إلى Premium للتخزين غير المحدود.",
     "savedDocuments": "المستندات المحفوظة",
     "stepsExtracted": "خطوات مستخرجة",
     "documentScanner": "ماسح المستندات",
