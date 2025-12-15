@@ -87,7 +87,10 @@
       "driversLicense": "Convertire la patente straniera",
       "registerResidence": "Registrare la residenza",
       "healthcareTessera": "Tessera sanitaria"
-    }
+    },
+    "searchesRemaining": "ricerche rimanenti oggi",
+    "limitReached": "Limite giornaliero di ricerche raggiunto",
+    "upgradeForUnlimited": "Passa a Premium per illimitato"
   },
   "emergency": {
     "title": "ACCESSO D'EMERGENZA",
