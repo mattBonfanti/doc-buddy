@@ -220,5 +220,33 @@
   },
   "language": {
     "select": "Language"
+  },
+  "auth": {
+    "login": "Login",
+    "signup": "Sign Up",
+    "logout": "Logout",
+    "email": "Email",
+    "password": "Password",
+    "emailPlaceholder": "your@email.com",
+    "passwordPlaceholder": "••••••••",
+    "loginButton": "Log In",
+    "signupButton": "Create Account",
+    "backToApp": "Back to App",
+    "subtitle": "Navigate Italian Bureaucracy",
+    "noAccount": "Don't have an account?",
+    "hasAccount": "Already have an account?",
+    "invalidCredentials": "Invalid email or password",
+    "emailAlreadyRegistered": "This email is already registered",
+    "loginSuccess": "Welcome back!",
+    "signupSuccess": "Account created successfully!",
+    "logoutSuccess": "Logged out successfully",
+    "loginRequired": "Please log in to access this feature",
+    "premiumFeatures": "Premium features with account:",
+    "feature": {
+      "vault": "Save documents to your vault",
+      "profile": "Auto-extract profile from documents",
+      "email": "Contact Italian offices directly",
+      "history": "Save search history"
+    }
   }
 }

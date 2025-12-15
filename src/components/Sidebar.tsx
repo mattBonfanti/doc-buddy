@@ -1,8 +1,11 @@
-import { FileText, Search, Shield, HelpCircle, User } from 'lucide-react';
+import { FileText, Search, Shield, HelpCircle, User, LogIn, LogOut, Lock } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
+import { useNavigate } from 'react-router-dom';
 import { StoredDocument } from '@/hooks/useDocumentStorage';
+import { useAuth } from '@/contexts/AuthContext';
 import ScadenzeGantt from './ScadenzeGantt';
 import LanguageSwitcher from './LanguageSwitcher';
+import { toast } from 'sonner';
 
 interface SidebarProps {
   onEmergencyMode: () => void;
@@ -14,6 +17,22 @@ interface SidebarProps {
 
 const Sidebar = ({ onEmergencyMode, activeView = 'search', onNavigate, documents = [], onSelectDocument }: SidebarProps) => {
   const { t } = useTranslation();
+  const navigate = useNavigate();
+  const { user, signOut } = useAuth();
+
+  const handleProtectedNavigation = (view: 'vault' | 'profile') => {
+    if (!user) {
+      toast.info(t('auth.loginRequired'));
+      navigate('/auth');
+      return;
+    }
+    onNavigate?.(view);
+  };
+
+  const handleLogout = async () => {
+    await signOut();
+    toast.success(t('auth.logoutSuccess'));
+  };
 
   return (
     <aside className="w-full md:w-72 bg-foreground text-background p-6 flex flex-col justify-between min-h-screen md:min-h-0">
@@ -34,7 +53,7 @@ const Sidebar = ({ onEmergencyMode, activeView = 'search', onNavigate, documents
             {t('sidebar.findSolutions')}
           </button>
           <button 
-            onClick={() => onNavigate?.('vault')}
+            onClick={() => handleProtectedNavigation('vault')}
             className={`w-full flex items-center gap-3 p-3 font-bold border-4 transition-colors ${
               activeView === 'vault' 
                 ? 'bg-background text-foreground border-background' 
@@ -43,9 +62,10 @@ const Sidebar = ({ onEmergencyMode, activeView = 'search', onNavigate, documents
           >
             <FileText size={20} />
             {t('sidebar.myVault')}
+            {!user && <Lock size={14} className="ml-auto opacity-60" />}
           </button>
           <button 
-            onClick={() => onNavigate?.('profile')}
+            onClick={() => handleProtectedNavigation('profile')}
             className={`w-full flex items-center gap-3 p-3 font-bold border-4 transition-colors ${
               activeView === 'profile' 
                 ? 'bg-background text-foreground border-background' 
@@ -54,6 +74,7 @@ const Sidebar = ({ onEmergencyMode, activeView = 'search', onNavigate, documents
           >
             <User size={20} />
             {t('sidebar.myProfile')}
+            {!user && <Lock size={14} className="ml-auto opacity-60" />}
           </button>
           <button className="w-full flex items-center gap-3 p-3 font-medium text-background/70 hover:text-background hover:bg-background/10 transition-colors border-4 border-transparent">
             <HelpCircle size={20} />
@@ -71,6 +92,25 @@ const Sidebar = ({ onEmergencyMode, activeView = 'search', onNavigate, documents
         </div>
 
         <LanguageSwitcher />
+
+        {/* Auth Button */}
+        {user ? (
+          <button
+            onClick={handleLogout}
+            className="w-full bg-muted text-muted-foreground hover:bg-background hover:text-foreground p-3 flex items-center justify-center gap-3 font-bold transition-all border-4 border-background/20"
+          >
+            <LogOut size={20} />
+            {t('auth.logout')}
+          </button>
+        ) : (
+          <button
+            onClick={() => navigate('/auth')}
+            className="w-full bg-background text-foreground hover:bg-primary hover:text-primary-foreground p-3 flex items-center justify-center gap-3 font-bold transition-all border-4 border-background"
+          >
+            <LogIn size={20} />
+            {t('auth.login')}
+          </button>
+        )}
         
         <button
           onClick={onEmergencyMode}

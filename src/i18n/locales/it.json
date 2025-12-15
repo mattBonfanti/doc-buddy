@@ -220,5 +220,33 @@
   },
   "language": {
     "select": "Lingua"
+  },
+  "auth": {
+    "login": "Accedi",
+    "signup": "Registrati",
+    "logout": "Esci",
+    "email": "Email",
+    "password": "Password",
+    "emailPlaceholder": "tua@email.com",
+    "passwordPlaceholder": "••••••••",
+    "loginButton": "Accedi",
+    "signupButton": "Crea Account",
+    "backToApp": "Torna all'App",
+    "subtitle": "Naviga la Burocrazia Italiana",
+    "noAccount": "Non hai un account?",
+    "hasAccount": "Hai già un account?",
+    "invalidCredentials": "Email o password non validi",
+    "emailAlreadyRegistered": "Questa email è già registrata",
+    "loginSuccess": "Bentornato!",
+    "signupSuccess": "Account creato con successo!",
+    "logoutSuccess": "Disconnessione effettuata",
+    "loginRequired": "Accedi per usare questa funzione",
+    "premiumFeatures": "Funzioni premium con account:",
+    "feature": {
+      "vault": "Salva documenti nel tuo archivio",
+      "profile": "Estrai profilo automaticamente dai documenti",
+      "email": "Contatta direttamente gli uffici italiani",
+      "history": "Salva cronologia ricerche"
+    }
   }
 }
