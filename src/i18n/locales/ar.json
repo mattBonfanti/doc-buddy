@@ -87,7 +87,10 @@
       "driversLicense": "تحويل رخصة القيادة الأجنبية",
       "registerResidence": "تسجيل الإقامة",
       "healthcareTessera": "بطاقة الرعاية الصحية"
-    }
+    },
+    "searchesRemaining": "عمليات بحث متبقية اليوم",
+    "limitReached": "تم الوصول إلى الحد اليومي للبحث",
+    "upgradeForUnlimited": "ترقية للحصول على غير محدود"
   },
   "emergency": {
     "title": "وصول الطوارئ",

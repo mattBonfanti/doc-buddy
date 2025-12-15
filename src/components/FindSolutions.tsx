@@ -1,6 +1,9 @@
 import { useState, useRef } from 'react';
-import { Search, Loader2, ExternalLink, BookOpen, Users, Building2, Mail } from 'lucide-react';
+import { Search, Loader2, ExternalLink, BookOpen, Users, Building2, Mail, Crown } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
+import { useSearchLimit } from '@/hooks/useSearchLimit';
+import { useToast } from '@/hooks/use-toast';
+import { Link } from 'react-router-dom';
 
 interface FindSolutionsProps {
   onVerifyInfo?: (data: { query: string; results: string }) => void;
@@ -8,10 +11,12 @@ interface FindSolutionsProps {
 
 const FindSolutions = ({ onVerifyInfo }: FindSolutionsProps) => {
   const { t } = useTranslation();
+  const { toast } = useToast();
   const [query, setQuery] = useState('');
   const [results, setResults] = useState('');
   const [isSearching, setIsSearching] = useState(false);
   const abortControllerRef = useRef<AbortController | null>(null);
+  const { remainingSearches, canSearch, recordSearch, dailyLimit, isPremium } = useSearchLimit();
 
   const suggestedSearches = [
     t('findSolutions.suggestions.renewPermesso'),
@@ -24,6 +29,16 @@ const FindSolutions = ({ onVerifyInfo }: FindSolutionsProps) => {
 
   const handleSearch = async (searchQuery: string) => {
     if (!searchQuery.trim()) return;
+    
+    // Check search limit before proceeding
+    if (!canSearch) {
+      toast({
+        title: t('findSolutions.limitReached'),
+        description: t('findSolutions.upgradeForUnlimited'),
+        variant: 'destructive',
+      });
+      return;
+    }
     
     setQuery(searchQuery);
     setResults('');
@@ -51,6 +66,9 @@ const FindSolutions = ({ onVerifyInfo }: FindSolutionsProps) => {
       if (!response.ok) {
         throw new Error('Search failed');
       }
+
+      // Record the search after successful initiation
+      recordSearch();
 
       const reader = response.body?.getReader();
       if (!reader) throw new Error('No reader available');
@@ -113,7 +131,7 @@ const FindSolutions = ({ onVerifyInfo }: FindSolutionsProps) => {
         </div>
 
         {/* Search Bar */}
-        <form onSubmit={handleSubmit} className="mb-6">
+        <form onSubmit={handleSubmit} className="mb-4">
           <div className="flex gap-2">
             <div className="flex-1 relative">
               <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground" size={20} />
@@ -127,13 +145,34 @@ const FindSolutions = ({ onVerifyInfo }: FindSolutionsProps) => {
             </div>
             <button
               type="submit"
-              disabled={isSearching || !query.trim()}
+              disabled={isSearching || !query.trim() || !canSearch}
               className="px-6 py-4 bg-foreground text-background font-black border-4 border-foreground hover:bg-primary hover:border-primary transition-colors disabled:opacity-50"
             >
               {isSearching ? <Loader2 className="animate-spin" size={24} /> : t('findSolutions.searchButton')}
             </button>
           </div>
         </form>
+
+        {/* Search Limit Badge */}
+        {!isPremium && (
+          <div className="mb-6 flex items-center justify-between p-3 bg-muted/50 border-2 border-border rounded">
+            <div className="flex items-center gap-2 text-sm">
+              <span className={`font-mono font-bold ${remainingSearches === 0 ? 'text-destructive' : 'text-foreground'}`}>
+                {remainingSearches}/{dailyLimit}
+              </span>
+              <span className="text-muted-foreground">
+                {t('findSolutions.searchesRemaining')}
+              </span>
+            </div>
+            <Link 
+              to="/subscription" 
+              className="flex items-center gap-1 text-sm text-primary hover:underline font-medium"
+            >
+              <Crown size={14} />
+              {t('findSolutions.upgradeForUnlimited')}
+            </Link>
+          </div>
+        )}
 
         {/* Suggested Searches */}
         {!results && !isSearching && (

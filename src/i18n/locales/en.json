@@ -87,7 +87,10 @@
       "driversLicense": "Convert foreign driver's license",
       "registerResidence": "Register residence (residenza)",
       "healthcareTessera": "Healthcare tessera sanitaria"
-    }
+    },
+    "searchesRemaining": "searches remaining today",
+    "limitReached": "Daily search limit reached",
+    "upgradeForUnlimited": "Upgrade for unlimited"
   },
   "emergency": {
     "title": "EMERGENCY ACCESS",
