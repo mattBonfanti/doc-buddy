@@ -220,5 +220,33 @@
   },
   "language": {
     "select": "اللغة"
+  },
+  "auth": {
+    "login": "تسجيل الدخول",
+    "signup": "إنشاء حساب",
+    "logout": "تسجيل الخروج",
+    "email": "البريد الإلكتروني",
+    "password": "كلمة المرور",
+    "emailPlaceholder": "بريدك@email.com",
+    "passwordPlaceholder": "••••••••",
+    "loginButton": "تسجيل الدخول",
+    "signupButton": "إنشاء حساب",
+    "backToApp": "العودة للتطبيق",
+    "subtitle": "تصفح البيروقراطية الإيطالية",
+    "noAccount": "ليس لديك حساب؟",
+    "hasAccount": "لديك حساب بالفعل؟",
+    "invalidCredentials": "البريد الإلكتروني أو كلمة المرور غير صحيحة",
+    "emailAlreadyRegistered": "هذا البريد الإلكتروني مسجل بالفعل",
+    "loginSuccess": "مرحباً بعودتك!",
+    "signupSuccess": "تم إنشاء الحساب بنجاح!",
+    "logoutSuccess": "تم تسجيل الخروج بنجاح",
+    "loginRequired": "يرجى تسجيل الدخول للوصول إلى هذه الميزة",
+    "premiumFeatures": "ميزات مميزة مع الحساب:",
+    "feature": {
+      "vault": "حفظ المستندات في أرشيفك",
+      "profile": "استخراج الملف الشخصي تلقائياً من المستندات",
+      "email": "التواصل مباشرة مع المكاتب الإيطالية",
+      "history": "حفظ سجل البحث"
+    }
   }
 }
