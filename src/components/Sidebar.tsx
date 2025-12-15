@@ -27,11 +27,6 @@ const Sidebar = ({ onEmergencyMode, activeView = 'search', onNavigate, documents
       navigate('/auth');
       return;
     }
-    if (!isPremium) {
-      toast.info(t('subscription.premiumRequired'));
-      navigate('/subscription');
-      return;
-    }
     onNavigate?.(view);
   };
 
@@ -68,7 +63,7 @@ const Sidebar = ({ onEmergencyMode, activeView = 'search', onNavigate, documents
           >
             <FileText size={20} />
             {t('sidebar.myVault')}
-            {(!user || !isPremium) && <Lock size={14} className="ml-auto opacity-60" />}
+            {!user && <Lock size={14} className="ml-auto opacity-60" />}
           </button>
           <button 
             onClick={() => handleProtectedNavigation('profile')}
@@ -80,7 +75,7 @@ const Sidebar = ({ onEmergencyMode, activeView = 'search', onNavigate, documents
           >
             <User size={20} />
             {t('sidebar.myProfile')}
-            {(!user || !isPremium) && <Lock size={14} className="ml-auto opacity-60" />}
+            {!user && <Lock size={14} className="ml-auto opacity-60" />}
           </button>
           <button className="w-full flex items-center gap-3 p-3 font-medium text-background/70 hover:text-background hover:bg-background/10 transition-colors border-4 border-transparent">
             <HelpCircle size={20} />

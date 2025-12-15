@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Upload, Save, Mail, FileText } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
+import { useNavigate } from 'react-router-dom';
 import Sidebar from '@/components/Sidebar';
 import EmergencyMode from '@/components/EmergencyMode';
 import DocumentViewer from '@/components/DocumentViewer';
@@ -18,9 +19,12 @@ import { useDocumentStorage, StoredDocument } from '@/hooks/useDocumentStorage';
 import { useEmailHistory } from '@/hooks/useEmailHistory';
 import { suggestOfficeByTopic } from '@/data/italianOffices';
 import { toast } from 'sonner';
+import { useAuth } from '@/contexts/AuthContext';
 
 const Index = () => {
   const { t } = useTranslation();
+  const navigate = useNavigate();
+  const { user, isPremium } = useAuth();
   const [mode, setMode] = useState<'normal' | 'emergency' | 'search' | 'profile'>('search');
   const [selectedDocumentId, setSelectedDocumentId] = useState<string | undefined>(undefined);
   const [emailComposerOpen, setEmailComposerOpen] = useState(false);
@@ -252,11 +256,33 @@ Best regards,
               <input
                 type="file"
                 className="hidden"
-                onChange={handleUpload}
+                onChange={(e) => {
+                  if (!isPremium && documents.length >= 1) {
+                    toast.info(t('subscription.uploadLimitReached'));
+                    navigate('/subscription');
+                    return;
+                  }
+                  handleUpload(e);
+                }}
                 accept="image/*,.pdf"
               />
             </label>
           </div>
+          
+          {/* Document limit indicator for free users */}
+          {!isPremium && (
+            <div className="text-sm font-mono text-muted-foreground flex items-center gap-2">
+              <span>{t('subscription.documentsUsed', { count: documents.length, max: 1 })}</span>
+              {documents.length >= 1 && (
+                <button 
+                  onClick={() => navigate('/subscription')}
+                  className="text-primary hover:underline font-bold"
+                >
+                  {t('subscription.unlockMore')}
+                </button>
+              )}
+            </div>
+          )}
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
