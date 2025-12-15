@@ -1,4 +1,4 @@
-import { FileText, Search, Shield, HelpCircle, User, LogIn, LogOut, Lock } from 'lucide-react';
+import { FileText, Search, Shield, HelpCircle, User, LogIn, LogOut, Lock, Crown } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { StoredDocument } from '@/hooks/useDocumentStorage';
@@ -6,6 +6,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import ScadenzeGantt from './ScadenzeGantt';
 import LanguageSwitcher from './LanguageSwitcher';
 import { toast } from 'sonner';
+import { Badge } from '@/components/ui/badge';
 
 interface SidebarProps {
   onEmergencyMode: () => void;
@@ -18,12 +19,17 @@ interface SidebarProps {
 const Sidebar = ({ onEmergencyMode, activeView = 'search', onNavigate, documents = [], onSelectDocument }: SidebarProps) => {
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const { user, signOut } = useAuth();
+  const { user, isPremium, signOut } = useAuth();
 
   const handleProtectedNavigation = (view: 'vault' | 'profile') => {
     if (!user) {
       toast.info(t('auth.loginRequired'));
       navigate('/auth');
+      return;
+    }
+    if (!isPremium) {
+      toast.info(t('subscription.premiumRequired'));
+      navigate('/subscription');
       return;
     }
     onNavigate?.(view);
@@ -62,7 +68,7 @@ const Sidebar = ({ onEmergencyMode, activeView = 'search', onNavigate, documents
           >
             <FileText size={20} />
             {t('sidebar.myVault')}
-            {!user && <Lock size={14} className="ml-auto opacity-60" />}
+            {(!user || !isPremium) && <Lock size={14} className="ml-auto opacity-60" />}
           </button>
           <button 
             onClick={() => handleProtectedNavigation('profile')}
@@ -74,7 +80,7 @@ const Sidebar = ({ onEmergencyMode, activeView = 'search', onNavigate, documents
           >
             <User size={20} />
             {t('sidebar.myProfile')}
-            {!user && <Lock size={14} className="ml-auto opacity-60" />}
+            {(!user || !isPremium) && <Lock size={14} className="ml-auto opacity-60" />}
           </button>
           <button className="w-full flex items-center gap-3 p-3 font-medium text-background/70 hover:text-background hover:bg-background/10 transition-colors border-4 border-transparent">
             <HelpCircle size={20} />
@@ -92,6 +98,28 @@ const Sidebar = ({ onEmergencyMode, activeView = 'search', onNavigate, documents
         </div>
 
         <LanguageSwitcher />
+
+        {/* Premium/Upgrade Button */}
+        {user && (
+          <button
+            onClick={() => navigate('/subscription')}
+            className={`w-full p-3 flex items-center justify-center gap-2 font-bold transition-all border-4 ${
+              isPremium 
+                ? 'bg-primary text-primary-foreground border-primary' 
+                : 'bg-background/10 text-background border-background/30 hover:bg-background/20'
+            }`}
+          >
+            <Crown size={18} />
+            {isPremium ? (
+              <>
+                {t('subscription.premium')}
+                <Badge variant="secondary" className="ml-1 text-xs">PRO</Badge>
+              </>
+            ) : (
+              t('subscription.upgrade')
+            )}
+          </button>
+        )}
 
         {/* Auth Button */}
         {user ? (
